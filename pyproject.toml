@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mazegen"
+version = "1.0.0"
+description = "A procedural maze generator and solver module for 42"
+readme = "src/mazegen/README.md"
+authors = [
+    { name = "marberge", email = "marberge@student.42lyon.fr"},
+    { name = "stmaire", email = "stmaire@student.42lyon.fr"}
+]
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.0"
+]
+
+[project.scripts]
+mazegen = "mazegen.main:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
