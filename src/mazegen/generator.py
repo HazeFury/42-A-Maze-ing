@@ -1,4 +1,4 @@
-#code de test
+# code de test
 
 class MazeGenerator:
     def __init__(self, width: int = 10, height: int = 10):
