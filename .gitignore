@@ -3,7 +3,7 @@ venv/
 venv_test/
 
 __pycache__
-__mypy__
+.mypy_cache
 
 build/
 dist/

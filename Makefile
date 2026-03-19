@@ -36,8 +36,8 @@ clean:
 fclean: clean
 	@echo "Remove virtual environment and distribution files"
 	@rm -rf $(VENV)
-	@rm -f $(NAME)-1.0.0-py3-none-any.whl
-	@rm -f $(NAME)-1.0.0.tar.gz
+	@rm -f $(NAME)-$(VERSION)-py3-none-any.whl
+	@rm -f $(NAME)-$(VERSION).tar.gz
 
 re: fclean all
 
