@@ -6,6 +6,10 @@ PYTHON = $(BIN)/python3
 PIP = $(BIN)/pip
 MAIN = a_maze_ing.py
 WHL = $(NAME)-$(VERSION)-py3-none-any.whl
+TAR = $(NAME)-$(VERSION).tar.gz
+
+SRC_DIR = src/
+APP_DIR = app/
 
 all: install
 
@@ -36,17 +40,17 @@ clean:
 fclean: clean
 	@echo "Remove virtual environment and distribution files"
 	@rm -rf $(VENV)
-	@rm -f $(NAME)-$(VERSION)-py3-none-any.whl
-	@rm -f $(NAME)-$(VERSION).tar.gz
+	@rm -f $(WHL)
+	@rm -f $(TAR)
 
 re: fclean all
 
 lint:
-	@$(BIN)/flake8 a_maze_ing.py src/
-	@$(BIN)/mypy a_maze_ing.py src/ --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	@$(BIN)/flake8 a_maze_ing.py $(SRC_DIR) $(APP_DIR)
+	@$(BIN)/mypy a_maze_ing.py $(SRC_DIR) $(APP_DIR) --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 lint-strict:
-	@$(BIN)/flake8 a_maze_ing.py src/
-	@$(BIN)/mypy a_maze_ing.py src/ --strict
+	@$(BIN)/flake8 a_maze_ing.py $(SRC_DIR) $(APP_DIR)
+	@$(BIN)/mypy a_maze_ing.py $(SRC_DIR) $(APP_DIR) --strict
 
 .PHONY: all install run debug clean fclean re lint lint-strict

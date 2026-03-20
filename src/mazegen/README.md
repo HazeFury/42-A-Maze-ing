@@ -19,12 +19,32 @@
    pip list
    ```
 6. S'assurer de la présence d'un fichier de configuration de maze dans le dossier de test (en copiant `config.txt` ou en créant un autre fichier de configuration).
-7. Lancer le programme avec la commande :
-   ```bash
-   mazegen config.txt
-   ```
+
+7. Créer un fichier qui importe le MazeGenerator en copiant-collant dans le terminal:
+```
+cat <<EOF > test_engine.py
+from mazegen.generator import MazeGenerator
+
+try:
+    # On teste le moteur de manière autonome
+    mg = MazeGenerator(width=10, height=10, seed=42)
+    grid = mg.generate()
+    print("✅ Succès : Le moteur 'mazegen' est bien installé et autonome !")
+    print(f"Structure générée : {len(grid)}x{len(grid[0])} cellules.")
+except ImportError:
+    print("❌ Erreur : Le module 'mazegen' est introuvable.")
+except Exception as e:
+    print(f"❌ Erreur lors de l'utilisation du moteur : {e}")
+EOF
+```
+
+7. 6. **Lancer le test** :
+```bash
+python3 test_engine.py
+```
+
 8. Un message apparaît en cas de succès :
    ```
-   Succès : Le package mazegen est bien installé !
-   Génération d'un labyrinthe 10x10...
+   ✅ Succès : Le moteur 'mazegen' est bien installé et autonome !
+	Structure générée : 10x10 cellules.
    ```
