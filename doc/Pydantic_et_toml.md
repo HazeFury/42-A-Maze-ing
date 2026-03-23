@@ -61,34 +61,3 @@ config = MazeConfig(**data) # On valide
 # On extrait les données brutes pour le moteur
 gen = MazeGenerator(width=config.width, height=config.height)
 ```
-
-## 🔧 Problèmes Actuels et Corrections Nécessaires
-
-### Erreurs de Linting (make lint - Exit Code 2)
-
-**1. Import inutilisé dans parser.py :**
-- Erreur : `F401 'pydantic.ValidationError' imported but unused`
-- Cause : ValidationError est importé mais jamais utilisé dans le code
-- Solution : Supprimer l'import ou l'utiliser pour gérer les erreurs de validation
-
-**2. Lignes trop longues :**
-- Erreur : `E501 line too long (88 > 79 characters)` dans parser.py
-- Erreur : `E501 line too long (81 > 79 characters)` dans parser.py
-- Erreur : `E501 line too long (80 > 79 characters)` dans generator.py
-- Solution : Reformater les lignes pour respecter la limite de 79 caractères
-
-### Recommandations pour la Suite
-
-1. **Migrer pyproject.toml** : Ajouter les optional-dependencies et retirer pydantic des dépendances principales
-2. **Corriger les imports** : Nettoyer les imports inutilisés dans parser.py
-3. **Respecter PEP 8** : Corriger la longueur des lignes dans tout le code
-4. **Tests** : S'assurer que make test passe après les corrections
-
-#### ✅ Ce qu'on FAIT (Isolation totale) :
-
-```python
-# Dans a_maze_ing.py
-config = MazeConfig(**data) # On valide
-# On extrait les données brutes pour le moteur
-gen = MazeGenerator(width=config.width, height=config.height)
-```
