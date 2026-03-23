@@ -53,4 +53,18 @@ lint-strict:
 	@$(BIN)/flake8 a_maze_ing.py $(SRC_DIR) $(APP_DIR)
 	@$(BIN)/mypy a_maze_ing.py $(SRC_DIR) $(APP_DIR) --strict
 
-.PHONY: all install run debug clean fclean re lint lint-strict
+test:
+	@echo "Lancement de toute la suite de tests..."
+	@$(PYTHON) -m pytest tests/ -v
+
+test-file:
+	@if [ -z "$(FILE)" ]; then \
+		echo "Erreur: Tu dois spécifier un fichier."; \
+		echo "Usage: make test-file FILE=tests/test_ton_fichier.py"; \
+	else \
+		echo "Lancement des tests pour $(FILE)..."; \
+		$(PYTHON) -m pytest $(FILE) -v; \
+	fi
+
+
+.PHONY: all install run debug clean fclean re lint lint-strict test test-file
