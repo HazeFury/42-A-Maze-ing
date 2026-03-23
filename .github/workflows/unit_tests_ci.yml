@@ -1,0 +1,31 @@
+name: CI - A-Maze-ing Tests
+
+# On définit ici le déclencheur (trigger)
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    # On fait tourner ça sur le dernier environnement Ubuntu fourni par GitHub
+    runs-on: ubuntu-latest
+
+    steps:
+      # Étape 1 : GitHub récupère votre code sur la machine virtuelle
+      - name: Checkout du repository
+        uses: actions/checkout@v5
+
+      # Étape 2 : On installe la bonne version de Python (le sujet exige 3.10 minimum)
+      - name: Configuration de Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      # Étape 3 : On utilise la règle de ton Makefile pour tout installer proprement !
+      - name: Installation de l'environnement
+        run: make install
+
+      # Étape 4 : On lance ta règle de test (qui appelle le pytest du venv)
+      - name: Exécution des tests unitaires
+        run: make test
