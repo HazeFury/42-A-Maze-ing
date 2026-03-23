@@ -1,5 +1,6 @@
 import sys
 from app.parser import parsing_config_file
+from mazegen.MazeGenerator import MazeGenerator
 
 
 def main():
@@ -15,6 +16,10 @@ def main():
     except Exception as e:
         print(f"[ERROR] Something went wrong : {e}")
         sys.exit(1)
+
+    maze = MazeGenerator(width=data.width, height=data.height, seed=data.seed)
+
+    maze.generate_maze()
 
 
 if __name__ == "__main__":
