@@ -12,12 +12,8 @@ authors = [
     { name = "stmaire", email = "stmaire@student.42lyon.fr"}
 ]
 requires-python = ">=3.10"
-dependencies = [
-    "pydantic>=2.0"
-]
-
-[project.scripts]
-mazegen = "mazegen.main:main"
+[project.optional-dependencies]
+dev = ["pydantic", "pytest", "flake8", "mypy"]
 
 [tool.setuptools]
 include-package-data = true

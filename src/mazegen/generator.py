@@ -7,5 +7,8 @@ class MazeGenerator:
 
     def generate(self):
         print(f"Génération d'un labyrinthe {self.width}x{self.height}...")
-        self.grid = [[0 for _ in range(self.width)] for _ in range(self.height)]
+        self.grid = [
+            [0 for _ in range(self.width)]
+            for _ in range(self.height)
+            ]
         return self.grid
