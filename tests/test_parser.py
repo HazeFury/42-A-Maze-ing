@@ -88,3 +88,30 @@ def test_parsing_config_file_not_found():
     """Test que la fonction lève bien une erreur si le fichier n'existe pas."""
     with pytest.raises(FileNotFoundError):
         parsing_config_file("fichier_fantome.txt")
+
+##########
+
+def test_parsing_missing_key(tmp_path):
+    """Vérifie l'erreur quand une clé obligatoire (WIDTH) manque."""
+    bad_config = tmp_path / "missing_width.txt"
+    # On oublie volontairement la ligne WIDTH
+    bad_config.write_text(
+        "HEIGHT=10\n"
+        "ENTRY=1,1\n"
+        "EXIT=8,8\n"
+        "OUTPUT_FILE=out.txt\n"
+        "PERFECT=True\n"
+    )
+
+
+def test_parsing_out_of_bounds_coords(tmp_path):
+    """Vérifie l'erreur si ENTRY est en dehors du labyrinthe (15,15 pour un 10x10)."""
+    bad_config = tmp_path / "out_of_bounds.txt"
+    bad_config.write_text(
+        "WIDTH=10\n"
+        "HEIGHT=10\n"
+        "ENTRY=15,15\n"  # <--- Erreur ici
+        "EXIT=8,8\n"
+        "OUTPUT_FILE=out.txt\n"
+        "PERFECT=True\n"
+    )
