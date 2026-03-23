@@ -14,17 +14,16 @@ APP_DIR = app/
 all: install
 
 install: $(VENV)
-
-$(VENV): requirements.txt pyproject.toml
-	@python3 -c "import sys; exit(1) if sys.version_info < (3, 10) else exit(0)" || \
-	(echo "Error: Python 3.10 or higher is required for A-Maze-ing."; exit 1)
-	@python3 -m venv $(VENV)
 	@$(PIP) install --upgrade pip
 	@$(PIP) install build
-	@$(PIP) install -e .
+	@$(PIP) install -e ".[dev]"
 	@$(PYTHON) -m build
 	@cp dist/$(WHL) .
-	@touch $(VENV)
+
+$(VENV):
+	@python3 -c "import sys; exit(1) if sys.version_info < (3, 10) else exit(0)" || \
+	(echo "Error: Python 3.10 or higher is required."; exit 1)
+	@python3 -m venv $(VENV)
 
 run:
 	@$(PYTHON) $(MAIN) config.txt
@@ -46,12 +45,12 @@ fclean: clean
 re: fclean all
 
 lint:
-	@$(BIN)/flake8 a_maze_ing.py $(SRC_DIR) $(APP_DIR)
-	@$(BIN)/mypy a_maze_ing.py $(SRC_DIR) $(APP_DIR) --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	@$(PYTHON) -m flake8 $(MAIN) $(SRC_DIR) $(APP_DIR)
+	@$(PYTHON) -m mypy $(MAIN) $(SRC_DIR) $(APP_DIR) --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 lint-strict:
-	@$(BIN)/flake8 a_maze_ing.py $(SRC_DIR) $(APP_DIR)
-	@$(BIN)/mypy a_maze_ing.py $(SRC_DIR) $(APP_DIR) --strict
+	@$(PYTHON) -m flake8 $(MAIN) $(SRC_DIR) $(APP_DIR)
+	@$(PYTHON) -m mypy $(MAIN) $(SRC_DIR) $(APP_DIR) --strict
 
 test:
 	@echo "Lancement de toute la suite de tests..."
