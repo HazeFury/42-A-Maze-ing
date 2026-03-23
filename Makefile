@@ -67,4 +67,4 @@ test-file:
 	fi
 
 
-.PHONY: all install run debug clean fclean re lint lint-strict
+.PHONY: all install run debug clean fclean re lint lint-strict test test-file
