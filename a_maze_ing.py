@@ -13,6 +13,8 @@ def main():
     try:
         data = parsing_config_file(sys.argv[1])
         print(data)
+        if data.width < 9 or data.height < 7:
+            print("Error: Maze size is too small to draw the '42' pattern.")
     except Exception as e:
         print(f"[ERROR] Something went wrong : {e}")
         sys.exit(1)

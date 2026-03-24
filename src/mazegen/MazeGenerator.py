@@ -24,14 +24,34 @@ class MazeGenerator:
     # =========================================================================
     def _apply_42_pattern(self) -> None:
         """
-        Méthode interne (privée) pour pré-marquer les cases du 42
-        comme 'visitées' avant le passage de l'algorithme.
+        Marks a '42' pattern in the grid if dimensions allow (min 9x7).
         """
-        # Si la height et la width sont suffisament grande:
-        # La logique mathématique pour trouver le centre...
-        # Puis changer les "Cell.is_part_of_42" à True et s'assurer qu'elles
-        # sont bien toutes fermées.
-        pass
+        if self.width < 9 or self.height < 7:
+            return
+        pattern_w, pattern_h = 7, 5
+        centered_x = (self.width - pattern_w) // 2
+        centered_y = (self.height - pattern_h) // 2
+        four = [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 3), (2, 4)]
+        two = [
+            (4, 0),
+            (5, 0),
+            (6, 0),
+            (6, 1),
+            (6, 2),
+            (5, 2),
+            (4, 2),
+            (4, 3),
+            (4, 4),
+            (5, 4),
+            (6, 4)
+            ]
+
+        for x, y in four + two:
+            target_x = centered_x + x
+            target_y = centered_y + y
+            cell = self.grid[target_y][target_x]
+            cell.is_part_of_42 = True
+            cell.visited = True
 
     # =========================================================================
     def generate_maze(self) -> None:
@@ -53,7 +73,7 @@ class MazeGenerator:
         # casser quelques murs supplémentaires pour créer des boucles.
 
     def solve_path(
-            self, entry_coord: Tuple[int | int], exit_coord: Tuple[int | int]
+            self, entry_coord: Tuple[int, int], exit_coord: Tuple[int, int]
             ) -> None:
         # (Code théorique)
         solver = Solver(
