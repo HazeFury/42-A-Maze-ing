@@ -2,7 +2,7 @@ class Cell:
     def __init__(self, x: int, y: int):
         self.x = x
         self.y = y
-        self.visited = False  # Par défaut, la cellule n'a jamais été visitée par l'algorithme
+        self.visited = False
         self.is_part_of_42 = False  # Passe a True dans la fonction qui ajoute le 42 pattern dans le maze -> servira à gérer le la couleur lors de l'affichage
         self.is_solution = False  # Passe à true dans le solver du chemin et permettra de gérer l'affichage plus facilement à après
         self.walls = {"N": True, "E": True, "S": True, "W": True}
