@@ -26,25 +26,25 @@ class IterativeBacktracker:
             return self.grid[y][x]
         return None
 
-    def _get_unvisited_neighbours(
+    def _get_unvisited_neighbors(
             self,
             cell: Cell
             ) -> List[Tuple[Cell, str]]:
         """
         Find all adjacent cells that are within bounds and not yet visited.
         """
-        unvisited_neighbours = []
+        unvisited_neighbors = []
 
         adjacent_cells: Tuple[Tuple[int, int, str], ...]
         adjacent_cells = ((0, -1, 'N'), (1, 0, 'E'), (0, 1, 'S'), (-1, 0, 'W'))
 
         for adjacent_cell in adjacent_cells:
             dx, dy, direction = adjacent_cell
-            neighbour = self._get_cell(dx + cell.x, dy + cell.y)
-            if neighbour and not neighbour.visited:
-                unvisited_neighbours.append((neighbour, direction))
+            neighbor = self._get_cell(dx + cell.x, dy + cell.y)
+            if neighbor and not neighbor.visited:
+                unvisited_neighbors.append((neighbor, direction))
 
-        return unvisited_neighbours
+        return unvisited_neighbors
 
     def _remove_walls(
             self,
@@ -53,7 +53,7 @@ class IterativeBacktracker:
             direction: str
             ) -> None:
         """
-        Break the wall between the current cell and the chosen neighbour.
+        Break the wall between the current cell and the chosen neighbor.
         """
         opposite = {'N': 'S', 'S': 'N', 'E': 'W', 'W': 'E'}
 
@@ -78,12 +78,12 @@ class IterativeBacktracker:
         while stack:
             current_cell = stack[-1]
 
-            unvisited_neighbours: List[Tuple[Cell, str]]
-            unvisited_neighbours = self._get_unvisited_neighbours(current_cell)
+            unvisited_neighbors: List[Tuple[Cell, str]]
+            unvisited_neighbors = self._get_unvisited_neighbors(current_cell)
 
-            if unvisited_neighbours:
+            if unvisited_neighbors:
                 adjacent_cell, direction = self.rng.choice(
-                    unvisited_neighbours
+                    unvisited_neighbors
                     )
                 self._remove_walls(current_cell, adjacent_cell, direction)
                 adjacent_cell.visited = True
