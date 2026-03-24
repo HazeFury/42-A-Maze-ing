@@ -128,7 +128,6 @@ def parsing_config_file(filepath: str) -> MazeConfig:
                                              f"in config file")
 
                         raw_data[key] = value
-        print(raw_data)
 
     except FileNotFoundError:
         raise FileNotFoundError(f"File not found : '{filepath}'")
