@@ -19,11 +19,11 @@ def main():
         print(f"[ERROR] Something went wrong : {e}")
         sys.exit(1)
 
-    # maze = MazeGenerator(width=data.width, height=data.height, seed=data.seed)
+    maze = MazeGenerator(width=data.width, height=data.height, seed=data.seed)
 
-    # maze.generate_maze()
+    maze.generate_maze()
 
-    display = MazeDisplay()
+    display = MazeDisplay(maze)
     display.start()
 
 
