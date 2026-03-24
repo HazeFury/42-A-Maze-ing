@@ -94,6 +94,24 @@ class MazeConfig(BaseModel):
 
         return self
 
+    @model_validator(mode='after')
+    def check_display_limits(self) -> 'MazeConfig':
+        """Validate that maze dimensions do not exceed display limits.
+
+        Returns:
+            MazeConfig: The validated instance.
+
+        Raises:
+            ValueError: If maze dimensions exceed display limits.
+        """
+        max_width = 200
+        max_height = 200
+
+        if self.width > max_width or self.height > max_height:
+            raise ValueError(f"Maze dimensions exceed display limits "
+                             f"({max_width}x{max_height})")
+        return self
+
 
 def parsing_config_file(filepath: str) -> MazeConfig:
     """Parse and validate configuration from a text file.
