@@ -1,5 +1,5 @@
 from mazegen.Cell import Cell
-
+from typing import Tuple
 
 class Solver:
     def __init__(
@@ -24,7 +24,7 @@ class Solver:
         self.path: list[Cell] = []
 
     # =========================================================================
-    def get_cell(self, x: int, y: int) -> Cell | None:
+    def _get_cell(self, x: int, y: int) -> Cell | None:
         """Méthode utilitaire pour sécuriser l'accès à la grille."""
         if 0 <= x < self.width and 0 <= y < self.height:
             return self.grid[y][x]
@@ -45,7 +45,17 @@ class Solver:
         cases non visitées, le Solver doit regarder les cases adjacentes
         OÙ IL N'Y A PAS DE MUR.
         """
-        pass
+        accessible_neighbors: list[Cell] = []
+
+        adjacent_cells: Tuple[Tuple[int, int, str], ...]
+        adjacent_cells = ((0, -1, 'N'), (1, 0, 'E'), (0, 1, 'S'), (-1, 0, 'W'))
+
+        for adjacent_cell in adjacent_cells:
+            dx, dy, direction = adjacent_cell
+            if not cell.walls[direction]:
+                neighbor = self.get_cell(dx + cell.x, dy + cell.y)
+                if neighbor:
+                    accessible_neighbors.append(neighbor)
 
     # =========================================================================
     def _reconstruct_path(
