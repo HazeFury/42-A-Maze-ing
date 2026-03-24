@@ -24,8 +24,6 @@ class MazeDisplay:
         """
         Dessine le labyrinthe en utilisant le concept de Grille Étendue.
         """
-        # Pour éviter de crasher si le terminal est trop petit
-        max_y, max_x = stdscr.getmaxyx()
 
         # On parcourt la grille mathématique
         for y in range(self.maze.height):
@@ -73,68 +71,14 @@ class MazeDisplay:
                         stdscr.addstr(screen_y, screen_x + 2, self.WALL_CHAR, curses.color_pair(1))
 
                     # Les coins (toujours des murs pour que visuellement ce soit fermé)
-                    stdscr.addstr(screen_y - 1, screen_x - 2, self.WALL_CHAR, curses.color_pair(1)) # Nord-Ouest
-                    stdscr.addstr(screen_y - 1, screen_x + 2, self.WALL_CHAR, curses.color_pair(1)) # Nord-Est
-                    stdscr.addstr(screen_y + 1, screen_x - 2, self.WALL_CHAR, curses.color_pair(1)) # Sud-Ouest
-                    stdscr.addstr(screen_y + 1, screen_x + 2, self.WALL_CHAR, curses.color_pair(1)) # Sud-Est
+                    stdscr.addstr(screen_y - 1, screen_x - 2, self.WALL_CHAR, curses.color_pair(1))  # Nord-Ouest
+                    stdscr.addstr(screen_y - 1, screen_x + 2, self.WALL_CHAR, curses.color_pair(1))  # Nord-Est
+                    stdscr.addstr(screen_y + 1, screen_x - 2, self.WALL_CHAR, curses.color_pair(1))  # Sud-Ouest
+                    stdscr.addstr(screen_y + 1, screen_x + 2, self.WALL_CHAR, curses.color_pair(1))  # Sud-Est
 
                 except curses.error:
                     # Ignore les erreurs si on essaie de dessiner en dehors du terminal
                     pass
-
-    # def _draw_loop(self, stdscr: curses.window) -> None:
-    #     """
-    #     C'est ici que tout se passe. stdscr est la fenêtre principale.
-    #     """
-    #     # 1. Configuration initiale
-    #     curses.curs_set(0)  # Cache le curseur clignotant du terminal
-    #     self._init_colors()
-
-    #     stdscr.clear()      # Nettoie l'écran alternatif
-    #     self._draw_maze(stdscr)
-    #     # 2. Récupération dynamique de la taille actuelle du terminal
-    #     height, _ = stdscr.getmaxyx()
-
-    #     instructions = " Appuie sur 'q' pour quitter, 'r' pour regénérer "
-
-    #     try:
-    #         # curses.A_REVERSE inverse les couleurs (texte noir sur fond blanc) pour faire un beau menu !
-    #         # Affichage du texte (stdscr.addstr(y, x, texte))
-
-    #         stdscr.addstr(height - 1, 2, instructions, curses.A_REVERSE)
-    #     except curses.error:
-    #         pass
-    #     #  On rafraîchit l'écran pour appliquer les modifications visuelles
-    #     stdscr.refresh()
-    #     #  La Boucle d'Événements (écoute le clavier en temps réel)
-    #     while True:
-    #         key = stdscr.getch()  # Attend que l'utilisateur appuie sur une touche
-
-    #         if key == ord('q'):
-    #             break  # On sort de la boucle, le wrapper va fermer l'écran proprement
-    #         elif key == ord('r'):
-    #             stdscr.clear()
-    #             try:
-    #                 stdscr.addstr(0, 0, "Génération en cours...")
-    #                 stdscr.refresh()
-    #             except curses.error:
-    #                 pass
-
-    #             # MAGIE : On demande au moteur de refaire ses calculs
-    #             self.maze.replace_seed()
-    #             self.maze.reset_grid()
-    #             self.maze.generate_maze()
-
-    #             # On redessine l'écran avec les nouvelles données
-    #             stdscr.clear()
-    #             self._draw_maze(stdscr)
-    #             stdscr.refresh()
-
-    #             try:
-    #                 stdscr.addstr(height - 1, 2, instructions, curses.A_REVERSE)
-    #             except curses.error:
-    #                 pass
-    #             stdscr.refresh()
 
     def _draw_loop(self, stdscr: curses.window) -> None:
         curses.curs_set(0)
