@@ -54,7 +54,7 @@ class MazeDisplay:
                 elif cell.is_solution:
                     entry_x, entry_y = self.entry_coord
                     exit_x, exit_y = self.exit_coord
-                    if cell.y == entry_x and cell.x == entry_y:
+                    if cell.x == entry_x and cell.y == entry_y:
                         color = curses.color_pair(4)
                     elif cell.x == exit_x and cell.y == exit_y:
                         color = curses.color_pair(5)
