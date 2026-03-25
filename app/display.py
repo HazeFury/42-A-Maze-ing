@@ -23,6 +23,8 @@ class MazeDisplay:
         curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)  # Murs standards
         curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)  # Motif 42
         curses.init_pair(3, curses.COLOR_CYAN, curses.COLOR_BLACK)   # Solution
+        curses.init_pair(4, curses.COLOR_RED, curses.COLOR_BLACK)   # Entrée
+        curses.init_pair(5, curses.COLOR_GREEN, curses.COLOR_BLACK)   # Sortie
 
     def _draw_maze(self, stdscr: curses.window) -> None:
         """
@@ -50,7 +52,14 @@ class MazeDisplay:
                     color = curses.color_pair(2)
                     char_to_draw = self.P42_CHAR
                 elif cell.is_solution:
-                    color = curses.color_pair(3)
+                    entry_x, entry_y = self.entry_coord
+                    exit_x, exit_y = self.exit_coord
+                    if cell.y == entry_x and cell.x == entry_y:
+                        color = curses.color_pair(4)
+                    elif cell.x == exit_x and cell.y == exit_y:
+                        color = curses.color_pair(5)
+                    else:
+                        color = curses.color_pair(3)
                     char_to_draw = self.SOL_CHAR
 
                 # On dessine le centre de la cellule
