@@ -1,50 +1,180 @@
-# Tester le package `mazegen` dans un dossier de test
+# mazegen
 
-1. Se rendre dans le dossier de test.
-2. Créer un environnement virtuel :
-   ```bash
-   python3 -m venv venv_test
-   ```
-3. L'activer :
-   ```bash
-   source venv_test/bin/activate
-   ```
-4. Installer le package `mazegen` :
-   ```bash
-   pip install ../A_Maze_ing/mazegen-1.0.0-py3-none-any.whl
-   ```
-   *(chemin à adapter en fonction de la localisation du dossier !)*
-5. Vérifier les dépendances installées :
-   ```bash
-   pip list
-   ```
-6. S'assurer de la présence d'un fichier de configuration de maze dans le dossier de test (en copiant `config.txt` ou en créant un autre fichier de configuration).
+A standalone Python package to generate and solve mazes.
 
-7. Créer un fichier qui importe le MazeGenerator en copiant-collant dans le terminal:
+## Installation & Build
+
+From the root of the project, build the package:
+
+```bash
+python3 -m build
 ```
-cat <<EOF > test_engine.py
-from mazegen.generator import MazeGenerator
+
+## Usage
+
+### Basic Example
+
+```python
+from mazegen import MazeGenerator
+
+# Create a generator instance with default parameters (10x10)
+mg = MazeGenerator(width=10, height=10)
+
+# Generate the maze
+mg.generate_maze()
+
+# Solve the maze from entry (0, 0) to exit (9, 9)
+if mg.solve_path(entry_coord=(0, 0), exit_coord=(9, 9)):
+    # Access solution directions via the solver attribute of the mg instance
+    print(mg.solver.get_solution_directions())
+
+### Custom Parameters
+
+You can instantiate the generator with custom parameters:
+
+```python
+from mazegen import MazeGenerator
+
+# Create a generator with custom size and seed for reproducibility
+mg = MazeGenerator(width=15, height=15, seed=42)
+
+# Generate the maze (includes 42 pattern if dimensions allow >= 9x7)
+mg.generate_maze()
+
+# Solve the maze
+mg.solve_path(entry_coord=(0, 0), exit_coord=(14, 14))
+```
+
+**Constructor parameters:**
+- `width` (int): Width of the maze (default: 10)
+- `height` (int): Height of the maze (default: 10)
+- `seed` (int | None): Random seed for reproducibility (default: None)
+
+### Methods
+
+#### `generate_maze()`
+Generates the maze using the Iterative Backtracker algorithm. If dimensions allow (minimum 9x7), automatically marks a '42' pattern in the grid.
+
+```python
+mg.generate_maze()
+```
+
+#### `solve_path(entry_coord, exit_coord)`
+Solves the maze using BFS algorithm and marks solution cells. Returns None but updates cell properties.
+
+```python
+# Solve from top-left to bottom-right
+mg.solve_path(entry_coord=(0, 0), exit_coord=(9, 9))
+
+# Check if path was found
+if any(cell.is_solution for row in mg.grid for cell in row):
+    print("Path found!")
+```
+
+#### `replace_seed(new_seed)`
+Changes the random seed for generating a different maze.
+
+```python
+mg.replace_seed(new_seed=123)
+mg.generate_maze()  # Generates a different maze
+```
+
+### Accessing the Generated Structure
+
+```python
+from mazegen import MazeGenerator
+
+mg = MazeGenerator(width=10, height=10, seed=42)
+mg.generate_maze()
+mg.solve_path(entry_coord=(0, 0), exit_coord=(9, 9))
+
+# Access the grid directly (List of List of Cell objects)
+grid = mg.grid
+
+# Example: Check if the top-left cell has a North wall
+first_cell = grid[0][0]
+print(f"North wall exists: {first_cell.walls['N']}")
+
+# Get all solution cells
+solution_cells = [cell for row in grid for cell in row if cell.is_solution]
+print(f"Solution length: {len(solution_cells)} cells")
+```
+
+### Cell Structure
+
+Each cell in the maze has the following properties:
+
+```python
+cell = mg.grid[0][0]
+
+# Coordinates
+print(f"Position: ({cell.x}, {cell.y})")
+
+# Walls (dict with keys: 'N', 'S', 'E', 'W')
+# True = wall exists, False = wall broken (passage exists)
+print(cell.walls)  # {'N': True, 'S': False, 'E': True, 'W': False}
+
+# Visited by generation algorithm
+print(f"Visited: {cell.visited}")
+
+# Part of the 42 pattern (if applicable)
+print(f"Part of 42 pattern: {cell.is_part_of_42}")
+
+# Part of the solution path
+print(f"Solution path: {cell.is_solution}")
+```
+
+## Quick Test (Virtual Environment)
+
+To verify the package is correctly built and standalone:
+
+### 1. Create and activate a virtual environment
+
+```bash
+cd /path/to/repo/root  # Navigate to where mazegen-1.0.0-py3-none-any.whl is located
+python3 -m venv venv_test && source venv_test/bin/activate
+```
+
+### 2. Install the generated wheel
+
+```bash
+pip install mazegen-1.0.0-py3-none-any.whl
+```
+
+### 3. Run a full integration test (Generation + Solving)
+
+```bash
+cat <<EOF > test_mazegen.py
+from mazegen import MazeGenerator
 
 try:
-    # On teste le moteur de manière autonome
-    mg = MazeGenerator(width=10, height=10, seed=42)
-    grid = mg.generate()
-    print("✅ Succès : Le moteur 'mazegen' est bien installé et autonome !")
-    print(f"Structure générée : {len(grid)}x{len(grid[0])} cellules.")
-except ImportError:
-    print("❌ Erreur : Le module 'mazegen' est introuvable.")
+    # 1. Create a generator instance (20x20)
+    # Using a fixed seed for reproducibility
+    mg = MazeGenerator(width=20, height=20, seed=42)
+    
+    # 2. Generate the maze
+    # This includes the protected '42' pattern in the center
+    mg.generate_maze()
+    print("✅ Generation: Success!")
+    
+    # 3. Solve the maze from top-left (0,0) to bottom-right (19,19)
+    # solve_path returns True if a path exists
+    success = mg.solve_path(entry_coord=(0, 0), exit_coord=(19, 19))
+    
+    if success:
+        print("✅ Solving: Success! Path found.")
+        # Access the solution directions via the solver attribute
+        # Directions are: 'N', 'S', 'E', 'W'
+        directions = mg.solver.get_solution_directions()
+        print(f"First 20 moves: {directions[:20]}...")
+    else:
+        print("❌ Solving: No path found (Check if the pattern blocks the way).")
+
 except Exception as e:
-    print(f"❌ Erreur lors de l'utilisation du moteur : {e}")
+    print(f"❌ Error during execution: {e}")
+    import traceback
+    traceback.print_exc()
 EOF
-```
 
-7. 6. **Lancer le test** :
-```bash
-python3 test_engine.py
+python3 test_mazegen.py
 ```
-
-8. Un message apparaît en cas de succès :
-   ```
-   ✅ Succès : Le moteur 'mazegen' est bien installé et autonome !
-	Structure générée : 10x10 cellules.
-   ```
