@@ -22,8 +22,16 @@ def main():
     maze = MazeGenerator(width=data.width, height=data.height, seed=data.seed)
 
     maze.generate_maze()
+    maze.solve_path(
+        entry_coord=data.entry_coord,
+        exit_coord=data.exit_coord
+    )
 
-    display = MazeDisplay(maze)
+    display = MazeDisplay(
+        maze,
+        entry_coord=data.entry_coord,
+        exit_coord=data.exit_coord
+        )
     display.start()
 
 
