@@ -3,12 +3,16 @@ from src.mazegen.MazeGenerator import MazeGenerator
 
 
 class MazeDisplay:
-    def __init__(self, maze: MazeGenerator):
+    def __init__(
+            self, maze: MazeGenerator, entry_coord: tuple[int, int],
+            exit_coord: tuple[int, int]):
         self.maze = maze
         self.WALL_CHAR = "██"
         self.PATH_CHAR = "  "
         self.P42_CHAR = "██"
-        self.SOL_CHAR = ".."
+        self.SOL_CHAR = "██"
+        self.entry_coord = entry_coord
+        self.exit_coord = exit_coord
 
     def _init_colors(self) -> None:
         """Initialise les paires de couleurs pour curses."""
@@ -133,6 +137,7 @@ class MazeDisplay:
                 self.maze.replace_seed()
                 self.maze.reset_grid()  # Ta fameuse fonction !
                 self.maze.generate_maze()
+                self.maze.solve_path(self.entry_coord, self.exit_coord)
             # Si la touche est curses.KEY_RESIZE, la boucle recommence toute seule,
             # recalcule max_y/max_x, et affiche le labyrinthe si c'est devenu assez grand !
 
