@@ -15,11 +15,22 @@ class MazeGenerator:
         self.grid = [[Cell(x, y) for x in range(width)] for y in range(height)]
 
     # =========================================================================
-    def replace_seed(self, new_seed: int | None) -> None:
+    def replace_seed(self, new_seed: int | None = None) -> None:
         """Change the seed of the MazeGenerator. Useful if you want to
         generate a maze based on a nez seed"""
+        print(f"avant : {self.rng}")
         self.rng = random.Random(new_seed)
+        print(f"apres : {self.rng}")
         # si le paramètre est None, on se base sur l'heure pour le random
+
+    # =========================================================================
+    def get_cell(self, x: int, y: int) -> Cell | None:
+        """
+        Return the cell at coordinates (x, y) or None if out of bounds.
+        """
+        if 0 <= x < self.width and 0 <= y < self.height:
+            return self.grid[y][x]
+        return None
 
     # =========================================================================
     def _apply_42_pattern(self) -> None:
@@ -52,6 +63,11 @@ class MazeGenerator:
             cell = self.grid[target_y][target_x]
             cell.is_part_of_42 = True
             cell.visited = True
+
+    # =========================================================================
+    def reset_grid(self) -> None:
+        self.grid = [[Cell(x, y) for x in range(self.width)]
+                     for y in range(self.height)]
 
     # =========================================================================
     def generate_maze(self) -> None:
