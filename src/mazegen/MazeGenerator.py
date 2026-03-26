@@ -2,7 +2,6 @@ from mazegen.Cell import Cell
 from mazegen.generator import IterativeBacktracker
 from mazegen.Solver import Solver
 import random
-from typing import Tuple
 
 
 class MazeGenerator:
@@ -89,7 +88,7 @@ class MazeGenerator:
         # casser quelques murs supplémentaires pour créer des boucles.
 
     def solve_path(
-            self, entry_coord: Tuple[int, int], exit_coord: Tuple[int, int]
+            self, entry_coord: tuple[int, int], exit_coord: tuple[int, int]
             ) -> None:
         # (Code théorique)
         solver = Solver(
