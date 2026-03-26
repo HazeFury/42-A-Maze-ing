@@ -1,6 +1,7 @@
 from mazegen.cell import Cell
 from mazegen.maze_builder import MazeBuilder
 from mazegen.solver import Solver
+from mazegen.exporter import Exporter
 import random
 
 
@@ -117,3 +118,20 @@ class MazeGenerator:
             )
         solver.solve()
         # Parfait, on a une solution ! On peut marquer les cellules du chemin.
+
+    def export_maze_to_file(
+            self, entry_coord: tuple[int, int],
+            exit_coord: tuple[int, int],
+            filename: str
+            ) -> None:
+
+        exporter = Exporter(
+            self.grid,
+            self.width,
+            self.height,
+            entry_coord,
+            exit_coord,
+            filename
+            )
+
+        exporter.write_output_file()

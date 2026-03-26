@@ -11,3 +11,5 @@ dist/
 *.egg-info/
 *.whl
 *.tar.gz
+
+maze.txt
