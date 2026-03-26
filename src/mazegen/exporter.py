@@ -1,5 +1,5 @@
-from mazegen.Cell import Cell
-from mazegen.Solver import Solver
+from mazegen.cell import Cell
+from mazegen.solver import Solver
 
 
 class Exporter:

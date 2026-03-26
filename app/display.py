@@ -1,5 +1,5 @@
 import curses
-from src.mazegen.MazeGenerator import MazeGenerator
+from mazegen.maze_generator import MazeGenerator
 
 
 class MazeDisplay:

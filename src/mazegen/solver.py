@@ -1,4 +1,4 @@
-from mazegen.Cell import Cell
+from mazegen.cell import Cell
 from collections import deque
 
 

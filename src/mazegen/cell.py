@@ -13,6 +13,10 @@ class Cell:
         """Casser un mur revient à créer une arête dans notre graphe."""
         self.walls[direction] = False
 
+    def repair_wall(self, direction: str):
+        """Remet un mur (ferme l'arête du graphe)."""
+        self.walls[direction] = True
+
     def get_hex_value(self) -> str:
         """
         Traduit l'état de la cellule pour le fichier de sortie.

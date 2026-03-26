@@ -1,14 +1,26 @@
-from mazegen.Cell import Cell
-from mazegen.generator import IterativeBacktracker
-from mazegen.Solver import Solver
+from mazegen.cell import Cell
+from mazegen.maze_builder import MazeBuilder
+from mazegen.solver import Solver
 from mazegen.exporter import Exporter
 import random
 
 
 class MazeGenerator:
-    def __init__(self, width: int, height: int, seed: int | None = None):
+    """
+    Handle the maze lifecycle from grid initialization
+    to generation and solving.
+    """
+    def __init__(
+            self,
+            width: int,
+            height: int,
+            perfect: bool,
+            seed: int | None = None
+            ):
+        """Initialize the maze generator with dimensions and randomness settings."""
         self.width = width
         self.height = height
+        self.perfect = perfect
         self.rng = random.Random(seed)  # générateur de hasard isolé et sécurisé !
 
         # L'Hybride : Une matrice 2D remplie d'objets (Nœuds)
@@ -17,7 +29,7 @@ class MazeGenerator:
     # =========================================================================
     def replace_seed(self, new_seed: int | None = None) -> None:
         """Change the seed of the MazeGenerator. Useful if you want to
-        generate a maze based on a nez seed"""
+        generate a maze based on a new seed"""
         print(f"avant : {self.rng}")
         self.rng = random.Random(new_seed)
         print(f"apres : {self.rng}")
@@ -26,7 +38,8 @@ class MazeGenerator:
     # =========================================================================
     def get_cell(self, x: int, y: int) -> Cell | None:
         """
-        Return the cell at coordinates (x, y) or None if out of bounds.
+        Return the cell at coordinates (x, y)
+        or None if out of bounds.
         """
         if 0 <= x < self.width and 0 <= y < self.height:
             return self.grid[y][x]
@@ -66,27 +79,35 @@ class MazeGenerator:
 
     # =========================================================================
     def reset_grid(self) -> None:
+        """Reset the grid by creating new Cell objects for every coordinate."""
         self.grid = [[Cell(x, y) for x in range(self.width)]
                      for y in range(self.height)]
 
     # =========================================================================
     def generate_maze(self) -> None:
         """
-        Prépare le terrain et lance la stratégie de génération choisie.
+        Coordinate the maze construction process.
+
+        Apply the '42' pattern and handle both perfect and
+        imperfect maze generation based on settings.
         """
         # 1. On applique le motif 42 (qui mettra certaines cases en visited=True et is_part_of_42=True)
         self._apply_42_pattern()
 
         # 2. On instancie notre algorithme (la stratégie)
-        algo = IterativeBacktracker(
+        builder = MazeBuilder(
             self.grid, self.width, self.height, self.rng
             )
 
         # 3. L'algorithme fait son job directement sur notre matrice en mémoire !
-        algo.generate()
+        builder.generate()
 
         # (Optionnel) Si PERFECT=False, c'est ici qu'on viendrait
         # casser quelques murs supplémentaires pour créer des boucles.
+        if not self.perfect:
+            # On définit ici combien de murs on veut casser (ex: 10 de la grille)
+            nb_to_break = int((self.width * self.height) * 0.1)
+            builder.degrade_perfection(nb_to_break)
 
     def solve_path(
             self, entry_coord: tuple[int, int], exit_coord: tuple[int, int]
