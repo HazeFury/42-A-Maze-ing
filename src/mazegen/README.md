@@ -36,7 +36,7 @@ You can instantiate the generator with custom parameters:
 from mazegen import MazeGenerator
 
 # Create a generator with custom size and seed for reproducibility
-mg = MazeGenerator(width=15, height=15, seed=42)
+mg = MazeGenerator(width=15, height=15, perfect=True, seed=42)
 
 # Generate the maze (includes 42 pattern if dimensions allow >= 9x7)
 mg.generate_maze()
@@ -48,6 +48,7 @@ mg.solve_path(entry_coord=(0, 0), exit_coord=(14, 14))
 **Constructor parameters:**
 - `width` (int): Width of the maze (default: 10)
 - `height` (int): Height of the maze (default: 10)
+- `perfect` (bool): generate a perfect maze if perfect is True
 - `seed` (int | None): Random seed for reproducibility (default: None)
 
 ### Methods
@@ -100,30 +101,6 @@ solution_cells = [cell for row in grid for cell in row if cell.is_solution]
 print(f"Solution length: {len(solution_cells)} cells")
 ```
 
-### Cell Structure
-
-Each cell in the maze has the following properties:
-
-```python
-cell = mg.grid[0][0]
-
-# Coordinates
-print(f"Position: ({cell.x}, {cell.y})")
-
-# Walls (dict with keys: 'N', 'S', 'E', 'W')
-# True = wall exists, False = wall broken (passage exists)
-print(cell.walls)  # {'N': True, 'S': False, 'E': True, 'W': False}
-
-# Visited by generation algorithm
-print(f"Visited: {cell.visited}")
-
-# Part of the 42 pattern (if applicable)
-print(f"Part of 42 pattern: {cell.is_part_of_42}")
-
-# Part of the solution path
-print(f"Solution path: {cell.is_solution}")
-```
-
 ## Quick Test (Virtual Environment)
 
 To verify the package is correctly built and standalone:
@@ -149,7 +126,7 @@ from mazegen import MazeGenerator
 
 try:
     # 1. Initialize Generator (20x20 grid)
-    mg = MazeGenerator(width=20, height=20, seed=42)
+    mg = MazeGenerator(width=20, height=20, perfect=True, seed=42)
 
     # 2. Generate Maze
     mg.generate_maze()
