@@ -45,39 +45,43 @@ class MazeDisplay:
                 screen_y = (y * 2) + 1
                 screen_x = (x * 2) * 2 + 2  # *2 pour l'étendue, *2 pour la largeur du "██"
 
-                # 2. Détermination de la couleur et du caractère central
-                color = curses.color_pair(1)
-                char_to_draw = self.PATH_CHAR
-
-                if cell.is_part_of_42:
-                    color = curses.color_pair(2)
-                    char_to_draw = self.P42_CHAR
-                elif cell.is_solution:
-                    if cell.x == entry_x and cell.y == entry_y:
-                        color = curses.color_pair(4)
-                    elif cell.x == exit_x and cell.y == exit_y:
-                        color = curses.color_pair(5)
-                    else:
-                        if is_showing_path:
-                            color = curses.color_pair(3)
-                    char_to_draw = self.SOL_CHAR
-
-                # On dessine le centre de la cellule
                 try:
+                    # --- 1. DÉTERMINATION DU CENTRE (Couleur et Caractère) ---
+                    color = curses.color_pair(1)
+                    char_to_draw = self.PATH_CHAR  # Par défaut : vide
+
+                    if cell.is_part_of_42:
+                        color = curses.color_pair(2)
+                        char_to_draw = self.P42_CHAR
+                    elif cell.x == entry_x and cell.y == entry_y:
+                        # L'entrée gagne toujours !
+                        color = curses.color_pair(4)
+                        char_to_draw = self.SOL_CHAR
+                    elif cell.x == exit_x and cell.y == exit_y:
+                        # La sortie gagne toujours !
+                        color = curses.color_pair(5)
+                        char_to_draw = self.SOL_CHAR
+                    elif cell.is_solution and is_showing_path:
+                        # Le chemin standard (uniquement si activé)
+                        color = curses.color_pair(3)
+                        char_to_draw = self.SOL_CHAR
+
+                    # On dessine le centre !
                     stdscr.addstr(screen_y, screen_x, char_to_draw, color)
 
-                    if cell.is_solution:
-                        # Les ponts sont toujours cyan pour lier le chemin proprement
-                        bridge_color = curses.color_pair(3)
+                    # --- 2. DESSIN DES PONTS CONTINUS ---
+                    # On ne les dessine QUE si on affiche le chemin
+                    if cell.is_solution and is_showing_path:
+                        solution_color = curses.color_pair(3)
 
                         if cell.path_connections["N"]:
-                            stdscr.addstr(screen_y - 1, screen_x, self.SOL_CHAR, bridge_color)
+                            stdscr.addstr(screen_y - 1, screen_x, self.SOL_CHAR, solution_color)
                         if cell.path_connections["S"]:
-                            stdscr.addstr(screen_y + 1, screen_x, self.SOL_CHAR, bridge_color)
+                            stdscr.addstr(screen_y + 1, screen_x, self.SOL_CHAR, solution_color)
                         if cell.path_connections["W"]:
-                            stdscr.addstr(screen_y, screen_x - 2, self.SOL_CHAR, bridge_color)
+                            stdscr.addstr(screen_y, screen_x - 2, self.SOL_CHAR, solution_color)
                         if cell.path_connections["E"]:
-                            stdscr.addstr(screen_y, screen_x + 2, self.SOL_CHAR, bridge_color)
+                            stdscr.addstr(screen_y, screen_x + 2, self.SOL_CHAR, solution_color)
 
                     # 3. Dessin des murs (On dessine les murs autour du centre)
                     # Si le mur Nord existe, on met un bloc au-dessus
@@ -135,8 +139,7 @@ class MazeDisplay:
                     pass  # Si le terminal est vraiment minuscule (genre 2x2), on ignore
             else:
                 # La fenêtre est assez grande, on dessine la merveille !
-                if is_showing_path:
-                    self._draw_maze(stdscr, is_showing_path)
+                self._draw_maze(stdscr, is_showing_path)
 
                 instructions = [
                     " Appuie sur 'r' pour regénérer ",
