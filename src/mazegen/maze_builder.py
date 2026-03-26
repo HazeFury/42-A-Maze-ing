@@ -1,5 +1,5 @@
 import random
-from mazegen.Cell import Cell
+from mazegen.cell import Cell
 
 
 class MazeBuilder:

@@ -1,6 +1,6 @@
 import sys
 from app.parser import parsing_config_file
-from src.mazegen.MazeGenerator import MazeGenerator
+from mazegen.maze_generator import MazeGenerator
 from app.display import MazeDisplay
 
 

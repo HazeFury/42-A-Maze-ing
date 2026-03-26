@@ -1,6 +1,6 @@
-from mazegen.Cell import Cell
+from mazegen.cell import Cell
 from mazegen.maze_builder import MazeBuilder
-from mazegen.Solver import Solver
+from mazegen.solver import Solver
 import random
 
 
