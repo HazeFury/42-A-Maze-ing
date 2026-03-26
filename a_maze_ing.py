@@ -22,7 +22,7 @@ def main():
     maze = MazeGenerator(
         width=data.width,
         height=data.height,
-        perfect=data.perfect,
+        perfect=False,
         seed=data.seed
         )
 

@@ -104,7 +104,7 @@ class MazeGenerator:
         # (Optionnel) Si PERFECT=False, c'est ici qu'on viendrait
         # casser quelques murs supplémentaires pour créer des boucles.
         if not self.perfect:
-            # On définit ici combien de murs on veut casser (ex: 5% de la grille)
+            # On définit ici combien de murs on veut casser (ex: 10 de la grille)
             nb_to_break = int((self.width * self.height) * 0.1)
             builder.degrade_perfection(nb_to_break)
 

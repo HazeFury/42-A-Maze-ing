@@ -32,7 +32,7 @@ class MazeBuilder:
         """Calculate neighbor coordinates based on the given direction."""
         neighbors = {'N': (0, -1), 'S': (0, 1), 'E': (1, 0), 'W': (-1, 0)}
         dx, dy = neighbors[direction]
-        return x + dx, y + dy
+        return (x + dx, y + dy)
 
     def _get_unvisited_neighbors(
             self,
@@ -70,7 +70,7 @@ class MazeBuilder:
         cell.repair_wall(direction)
         neighbor.repair_wall(opposite)
 
-    def _creates_forbidden_area(
+    def _is_creating_forbidden_area(
             self, x: int, y: int, direction: str
             ) -> bool:
         """Check if breaking a wall violates the 3x3 open area constraint."""
@@ -168,9 +168,9 @@ class MazeBuilder:
             # Conditions pour casser :
             # - La cellule et le voisin existent
             # - Le mur est actuellement fermé
-            # - Ça ne crée pas de zone 3x3
+            # - Ça ne crée pas de zone 3x3 et n'est pas une cell du pattern # TODO
             if current and neighbor and current.walls[direction]:
-                if not self._creates_forbidden_area(x, y, direction):
+                if not self._is_creating_forbidden_area(x, y, direction):
                     # Pas besoin de rappeler _remove_walls ici car
                     # _creates_3x3_area l'a déjà fait (et n'a pas réparé si c'était OK)
                     broken += 1
