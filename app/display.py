@@ -26,7 +26,7 @@ class MazeDisplay:
         curses.init_pair(4, curses.COLOR_RED, curses.COLOR_BLACK)   # Entrée
         curses.init_pair(5, curses.COLOR_GREEN, curses.COLOR_BLACK)   # Sortie
 
-    def _draw_maze(self, stdscr: curses.window) -> None:
+    def _draw_maze(self, stdscr: curses.window, is_showing_path: bool) -> None:
         """
         Dessine le labyrinthe en utilisant le concept de Grille Étendue.
         """
@@ -58,12 +58,26 @@ class MazeDisplay:
                     elif cell.x == exit_x and cell.y == exit_y:
                         color = curses.color_pair(5)
                     else:
-                        color = curses.color_pair(3)
+                        if is_showing_path:
+                            color = curses.color_pair(3)
                     char_to_draw = self.SOL_CHAR
 
                 # On dessine le centre de la cellule
                 try:
                     stdscr.addstr(screen_y, screen_x, char_to_draw, color)
+
+                    if cell.is_solution:
+                        # Les ponts sont toujours cyan pour lier le chemin proprement
+                        bridge_color = curses.color_pair(3)
+
+                        if cell.path_connections["N"]:
+                            stdscr.addstr(screen_y - 1, screen_x, self.SOL_CHAR, bridge_color)
+                        if cell.path_connections["S"]:
+                            stdscr.addstr(screen_y + 1, screen_x, self.SOL_CHAR, bridge_color)
+                        if cell.path_connections["W"]:
+                            stdscr.addstr(screen_y, screen_x - 2, self.SOL_CHAR, bridge_color)
+                        if cell.path_connections["E"]:
+                            stdscr.addstr(screen_y, screen_x + 2, self.SOL_CHAR, bridge_color)
 
                     # 3. Dessin des murs (On dessine les murs autour du centre)
                     # Si le mur Nord existe, on met un bloc au-dessus
@@ -95,10 +109,11 @@ class MazeDisplay:
     def _draw_loop(self, stdscr: curses.window) -> None:
         curses.curs_set(0)
         self._init_colors()
+        is_showing_path: bool = True
 
         # On calcule la taille "physique" dont notre labyrinthe a besoin sur l'écran
         # Axe Y : (hauteur * 2) + 1 (pour les murs) + 2 (pour la marge et la barre d'infos)
-        required_y = (self.maze.height * 2) + 4
+        required_y = (self.maze.height * 2) + 10
 
         # Axe X : (largeur * 4) + 2 (pour les murs) + 2 (marge)
         # On multiplie par 4 car chaque cellule fait 2 caractères de large + l'espacement
@@ -120,12 +135,17 @@ class MazeDisplay:
                     pass  # Si le terminal est vraiment minuscule (genre 2x2), on ignore
             else:
                 # La fenêtre est assez grande, on dessine la merveille !
-                self._draw_maze(stdscr)
+                if is_showing_path:
+                    self._draw_maze(stdscr, is_showing_path)
 
-                instructions = [" Appuie sur 'r' pour regénérer ", " Appuie sur 'q' pour quitter"]
+                instructions = [
+                    " Appuie sur 'r' pour regénérer ",
+                    " Appuie sur 'q' pour quitter",
+                    " Appuie sur 'a' pour afficher / cacher  le chemin le plus court"
+                    ]
                 try:
                     for i, line in enumerate(instructions):
-                        stdscr.addstr(max_y - (2 - i), 2, line, curses.A_REVERSE)
+                        stdscr.addstr(max_y - (3 - i), 2, line, curses.A_REVERSE)
                         # curses.A_REVERSE inverse les couleurs (texte noir sur fond blanc) pour faire un beau menu !
                         # Affichage du texte (stdscr.addstr(y, x, texte))
                 except curses.error:
@@ -140,6 +160,8 @@ class MazeDisplay:
 
             if key == ord('q'):
                 break  # On sort de la boucle, le wrapper va fermer l'écran proprement
+            if key == ord('a'):
+                is_showing_path = not is_showing_path
             elif key == ord('r'):
                 # On regénère
                 self.maze.replace_seed()

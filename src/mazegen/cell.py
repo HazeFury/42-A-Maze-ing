@@ -8,6 +8,10 @@ class Cell:
         self.walls = {"N": True, "E": True, "S": True, "W": True}
         # Le Graphe : Les murs représentent l'absence d'arête (pas de chemin).
         # Au début, la cellule est un bloc solide, entourée de 4 murs.
+        # --- NOUVEAU DRAPEAU LOGIQUE ---
+        self.path_connections = {"N": False, "E": False, "S": False, "W": False}
+        # Stocke les directions des connexions du chemin de la solution.
+        # N=North, E=East, S=South, W=West. Par défaut, aucune connexion.
 
     def break_wall(self, direction: str):
         """Casser un mur revient à créer une arête dans notre graphe."""
