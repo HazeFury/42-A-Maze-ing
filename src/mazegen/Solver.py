@@ -56,7 +56,7 @@ class Solver:
         if not start_node or not exit_node:
             return False
 
-        file = deque([start_node])
+        queue = deque([start_node])
         # à la différence d'une liste, avec une Double Ended Queue,
         # tu peux ajouter ou retirer facilement
         # des éléments à la fin mais aussi au début :
@@ -70,22 +70,22 @@ class Solver:
         # permet de reconstruire ensuite le chemin
         # permet d'éviter les boucles(on regarde
         # si une cellule est déjà dans le dico
-        # avant de l'envoyer dans la file
+        # avant de l'envoyer dans la queue
         # si oui c'est que la cellule a déjà été visitée)
-        is_enfant_from: dict[Cell, Cell | None] = {}
-        is_enfant_from[start_node] = None
+        child_from: dict[Cell, Cell | None] = {}
+        child_from[start_node] = None
 
-        while file:
-            current = file.popleft()
+        while queue:
+            current = queue.popleft()
 
             if current == exit_node:
-                self._reconstruct_path(is_enfant_from, exit_node)
+                self._reconstruct_path(child_from, exit_node)
                 return True
 
             for neighbor in self._get_accessible_neighbors(current):
-                if neighbor not in is_enfant_from:
-                    is_enfant_from[neighbor] = current
-                    file.append(neighbor)
+                if neighbor not in child_from:
+                    child_from[neighbor] = current
+                    queue.append(neighbor)
 
         return False
 
@@ -111,7 +111,7 @@ class Solver:
         return accessible_neighbors
 
     def _reconstruct_path(
-            self, is_enfant_from: dict[Cell, Cell | None], exit_node: Cell
+            self, child_from: dict[Cell, Cell | None], exit_node: Cell
             ) -> None:
         """
         Backtrack from the exit node to the start node to build the path.
@@ -124,7 +124,7 @@ class Solver:
         while current_node is not None:
             path.append(current_node)
             current_node.is_solution = True
-            current_node = is_enfant_from[current_node]
+            current_node = child_from[current_node]
         # liste[start:stop:step]donc ici pas de début, pas de fin :
         # on prend toute la liste et on la retourne avec le step = -1
         self.path = path[::-1]

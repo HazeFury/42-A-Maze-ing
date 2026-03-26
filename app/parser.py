@@ -5,7 +5,7 @@ from pydantic import (
     Field,
     field_validator,
     model_validator)
-from typing import Optional, Dict, Any
+from typing import Any
 
 
 class MazeConfig(BaseModel):
@@ -18,7 +18,7 @@ class MazeConfig(BaseModel):
         exit_coord (Tuple[int, int]): Ending coordinates (x, y).
         output_file (str): Path to the output file.
         perfect (bool): Whether the maze is perfect (one unique path).
-        seed (Optional[int]): Seed for reproducibility.
+        seed (int |None): Seed for reproducibility.
     """
     # Interdit les clés non définies dans le modèle (ex: faute d'orthographe)
     # popultate_by_name=True permet d'utiliser les alias (ex: WIDTH)
@@ -31,7 +31,7 @@ class MazeConfig(BaseModel):
     exit_coord: tuple[int, int] = Field(alias="EXIT")
     output_file: str = Field(alias="OUTPUT_FILE")
     perfect: bool = Field(alias="PERFECT")
-    seed: Optional[int] = Field(None, alias="SEED", ge=0)
+    seed: int | None = Field(None, alias="SEED", ge=0)
 
     @field_validator("entry_coord", "exit_coord", mode="before")
     @classmethod
@@ -108,7 +108,7 @@ def parsing_config_file(filepath: str) -> MazeConfig:
         FileNotFoundError: If the config file is missing.
         ValueError: If duplicate keys or validation errors are found.
     """
-    raw_data: Dict[str, Any] = {}
+    raw_data: dict[str, Any] = {}
 
     try:
         with open(filepath, "r") as config:

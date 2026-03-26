@@ -1,13 +1,12 @@
 import random
 from mazegen.Cell import Cell
-from typing import List, Tuple
 
 
 class IterativeBacktracker:
     """Algorithm class to generate a maze using iterative backtracking."""
 
     def __init__(
-            self, grid: List[List[Cell]], width: int, height: int,
+            self, grid: list[list[Cell]], width: int, height: int,
             rng: random.Random
             ) -> None:
         """
@@ -29,13 +28,13 @@ class IterativeBacktracker:
     def _get_unvisited_neighbors(
             self,
             cell: Cell
-            ) -> List[Tuple[Cell, str]]:
+            ) -> list[tuple[Cell, str]]:
         """
         Find all adjacent cells that are within bounds and not yet visited.
         """
         unvisited_neighbors = []
 
-        adjacent_cells: Tuple[Tuple[int, int, str], ...]
+        adjacent_cells: tuple[tuple[int, int, str], ...]
         adjacent_cells = ((0, -1, 'N'), (1, 0, 'E'), (0, 1, 'S'), (-1, 0, 'W'))
 
         for adjacent_cell in adjacent_cells:
@@ -68,7 +67,7 @@ class IterativeBacktracker:
             raise ValueError(f"Invalid maze dimensions: "
                              f"{self.width}x{self.height}")
 
-        stack: List[Cell] = []
+        stack: list[Cell] = []
         current_cell = self._get_cell(0, 0)
 
         if current_cell:
@@ -78,7 +77,7 @@ class IterativeBacktracker:
         while stack:
             current_cell = stack[-1]
 
-            unvisited_neighbors: List[Tuple[Cell, str]]
+            unvisited_neighbors: list[tuple[Cell, str]]
             unvisited_neighbors = self._get_unvisited_neighbors(current_cell)
 
             if unvisited_neighbors:
