@@ -94,7 +94,5 @@ class MazeGenerator:
         solver = Solver(
             self.grid, self.width, self.height, entry_coord, exit_coord
             )
-        if solver.solve():
-            # Parfait, on a une solution ! On peut marquer les cellules du chemin.
-            for cell in solver.path:
-                cell.is_solution = True
+        solver.solve()
+        # Parfait, on a une solution ! On peut marquer les cellules du chemin.
