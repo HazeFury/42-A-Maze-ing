@@ -1,6 +1,6 @@
 import sys
 from app.parser import parsing_config_file
-from src.mazegen.MazeGenerator import MazeGenerator
+from mazegen.maze_generator import MazeGenerator
 from app.display import MazeDisplay
 
 
@@ -19,7 +19,12 @@ def main():
         print(f"[ERROR] Something went wrong : {e}")
         sys.exit(1)
 
-    maze = MazeGenerator(width=data.width, height=data.height, seed=data.seed)
+    maze = MazeGenerator(
+        width=data.width,
+        height=data.height,
+        perfect=False,
+        seed=data.seed
+        )
 
     maze.generate_maze()
     maze.solve_path(
