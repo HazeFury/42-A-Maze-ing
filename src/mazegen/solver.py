@@ -121,10 +121,34 @@ class Solver:
         """
         path = []
         current_node: Cell | None = exit_node
+
         while current_node is not None:
             path.append(current_node)
+
             current_node.is_solution = True
-            current_node = child_from[current_node]
+
+            parent_node = child_from[current_node]
+            if parent_node:
+                # On calcule la direction de connexion (N, S, E, W)
+                if current_node.x == parent_node.x:
+                    # Connexion verticale
+                    if current_node.y > parent_node.y:
+                        # On va du Sud vers le Nord
+                        current_node.path_connections["N"] = True
+                        parent_node.path_connections["S"] = True
+                    else:
+                        current_node.path_connections["S"] = True
+                        parent_node.path_connections["N"] = True
+                else:
+                    # Connexion horizontale
+                    if current_node.x > parent_node.x:
+                        current_node.path_connections["W"] = True
+                        parent_node.path_connections["E"] = True
+                    else:
+                        current_node.path_connections["E"] = True
+                        parent_node.path_connections["W"] = True
+
+            current_node = parent_node
         # liste[start:stop:step]donc ici pas de début, pas de fin :
         # on prend toute la liste et on la retourne avec le step = -1
         self.path = path[::-1]
