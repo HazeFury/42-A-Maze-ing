@@ -148,32 +148,28 @@ cat <<EOF > test_mazegen.py
 from mazegen import MazeGenerator
 
 try:
-    # 1. Create a generator instance (20x20)
-    # Using a fixed seed for reproducibility
+    # 1. Initialize Generator (20x20 grid)
     mg = MazeGenerator(width=20, height=20, seed=42)
-    
-    # 2. Generate the maze
-    # This includes the protected '42' pattern in the center
+
+    # 2. Generate Maze
     mg.generate_maze()
     print("✅ Generation: Success!")
-    
-    # 3. Solve the maze from top-left (0,0) to bottom-right (19,19)
-    # solve_path returns True if a path exists
-    success = mg.solve_path(entry_coord=(0, 0), exit_coord=(19, 19))
-    
-    if success:
+
+    # 3. Solve from Top-Left (0,0) to Bottom-Right (19,19)
+    # This function returns None, but populates mg.solver
+    mg.solve_path(entry_coord=(0, 0), exit_coord=(19, 19))
+
+    # 4. Check if a solution was actually found by looking at the solver
+    if mg.solver and len(mg.solver.get_solution_directions()) > 0:
         print("✅ Solving: Success! Path found.")
-        # Access the solution directions via the solver attribute
-        # Directions are: 'N', 'S', 'E', 'W'
         directions = mg.solver.get_solution_directions()
+        print(f"Path Length: {len(directions)} steps")
         print(f"First 20 moves: {directions[:20]}...")
     else:
-        print("❌ Solving: No path found (Check if the pattern blocks the way).")
+        print("❌ Solving: No path found.")
 
 except Exception as e:
-    print(f"❌ Error during execution: {e}")
-    import traceback
-    traceback.print_exc()
+    print(f"❌ Error: {e}")
 EOF
 
 python3 test_mazegen.py

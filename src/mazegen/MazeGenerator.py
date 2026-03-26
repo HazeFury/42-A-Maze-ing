@@ -1,6 +1,6 @@
 from mazegen.Cell import Cell
 from mazegen.generator import IterativeBacktracker
-from mazegen.solver import Solver
+from mazegen.Solver import Solver
 import random
 from typing import Tuple
 
