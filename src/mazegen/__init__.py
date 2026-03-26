@@ -1,7 +1,4 @@
-from .Cell import Cell
-from .generator import IterativeBacktracker
-from .Solver import Solver
-from .MazeGenerator import MazeGenerator
+from .maze_generator import MazeGenerator
 
 
-__all__ = ["Cell", "IterativeBacktracker", "Solver", "MazeGenerator"]
+__all__ = ["MazeGenerator"]

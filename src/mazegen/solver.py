@@ -1,4 +1,4 @@
-from mazegen.Cell import Cell
+from mazegen.cell import Cell
 from collections import deque
 
 
@@ -128,31 +128,3 @@ class Solver:
         # liste[start:stop:step]donc ici pas de début, pas de fin :
         # on prend toute la liste et on la retourne avec le step = -1
         self.path = path[::-1]
-
-    def get_solution_directions(self) -> str:
-        """
-        Convert the path of Cells into a string of cardinal directions.
-
-        Example: "N S E W". Return an empty string if no path exists.
-        """
-        if not self.path or len(self.path) < 2:
-            return ""
-
-        directions: list[str] = []
-
-        for i in range(len(self.path) - 1):
-            current_x = self.path[i].x
-            current_y = self.path[i].y
-            next_x = self.path[i + 1].x
-            next_y = self.path[i + 1].y
-
-            if next_x > current_x:
-                directions.append('E')
-            elif next_x < current_x:
-                directions.append('W')
-            elif next_y > current_y:
-                directions.append('S')
-            elif next_y < current_y:
-                directions.append('N')
-
-        return " ".join(directions)
