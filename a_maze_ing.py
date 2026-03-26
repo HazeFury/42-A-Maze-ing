@@ -26,6 +26,11 @@ def main():
         entry_coord=data.entry_coord,
         exit_coord=data.exit_coord
     )
+    maze.export_maze_to_file(
+        entry_coord=data.entry_coord,
+        exit_coord=data.exit_coord,
+        filename=data.output_file
+        )
 
     display = MazeDisplay(
         maze,

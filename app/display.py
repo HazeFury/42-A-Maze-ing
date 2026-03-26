@@ -30,7 +30,8 @@ class MazeDisplay:
         """
         Dessine le labyrinthe en utilisant le concept de Grille Étendue.
         """
-
+        entry_x, entry_y = self.entry_coord
+        exit_x, exit_y = self.exit_coord
         # On parcourt la grille mathématique
         for y in range(self.maze.height):
             for x in range(self.maze.width):
@@ -52,8 +53,6 @@ class MazeDisplay:
                     color = curses.color_pair(2)
                     char_to_draw = self.P42_CHAR
                 elif cell.is_solution:
-                    entry_x, entry_y = self.entry_coord
-                    exit_x, exit_y = self.exit_coord
                     if cell.x == entry_x and cell.y == entry_y:
                         color = curses.color_pair(4)
                     elif cell.x == exit_x and cell.y == exit_y:
