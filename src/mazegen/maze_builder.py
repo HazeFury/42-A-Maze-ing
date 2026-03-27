@@ -169,7 +169,10 @@ class MazeBuilder:
             # - La cellule et le voisin existent
             # - Le mur est actuellement fermé
             # - Ça ne crée pas de zone 3x3 et n'est pas une cell du pattern # TODO
-            if current and neighbor and current.walls[direction]:
+            if (current and neighbor and
+            not current.is_part_of_42 and
+            not neighbor.is_part_of_42 and
+            current.walls[direction]):
                 if not self._is_creating_forbidden_area(x, y, direction):
                     # Pas besoin de rappeler _remove_walls ici car
                     # _creates_3x3_area l'a déjà fait (et n'a pas réparé si c'était OK)

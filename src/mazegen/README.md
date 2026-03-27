@@ -1,24 +1,37 @@
 # mazegen
 
-A standalone Python package to generate and solve mazes.
+### A standalone Python package to generate and solve mazes.
 
-## Installation & Build
 
-From the root of the project, build the package:
+This documentation covers the following requirements:
+- **Instantiation and Basic Usage**: How to create and use the generator with a basic example.
+- **Custom Parameters**: Passing parameters like size and seed.
+- **Accessing Generated Structure and Solution**: How to access the maze grid and solution.
+
+### Installation
+
+From the root of the project, install the package:
 
 ```bash
-python3 -m build
+pip install mazegen-1.0.0-py3-none-any.whl
 ```
 
-## Usage
+### Instantiation and Usage Overview
+
+To use the maze generator, follow this standard workflow:
+
+1. **Instantiate `MazeGenerator`** with your desired parameters (`width`, `height`, `perfect`, and an optional `seed`).
+2. **Call `generate_maze()`** to build the internal structure. If `perfect` is `False`, you can pass an `imperfection_rate` (0.0 to 1.0) to break extra walls and create loops.
+3. **Optionally, call `solve_path()`** to find the shortest path between your entry and exit points.
+4. **Access the grid** directly for custom logic or **export the maze** to a formatted file using `export_maze_to_file()`.
 
 ### Basic Example
 
 ```python
 from mazegen import MazeGenerator
 
-# Create a generator instance with default parameters (10x10)
-mg = MazeGenerator(width=10, height=10)
+# Create a generator instance with default parameters (10x10, perfect=True)
+mg = MazeGenerator(width=10, height=10, perfect=True)
 
 # Generate the maze
 mg.generate_maze()
@@ -28,6 +41,14 @@ if mg.solve_path(entry_coord=(0, 0), exit_coord=(9, 9)):
     # Access solution directions via the solver attribute of the mg instance
     print(mg.solver.get_solution_directions())
 
+# Export to a file (includes hexadecimal grid and solution path)
+mg.export_maze_to_file(
+    entry_coord=(0, 0), 
+    exit_coord=(9, 9), 
+    filename="maze.txt"
+)
+```
+
 ### Custom Parameters
 
 You can instantiate the generator with custom parameters:
@@ -36,13 +57,13 @@ You can instantiate the generator with custom parameters:
 from mazegen import MazeGenerator
 
 # Create a generator with custom size and seed for reproducibility
-mg = MazeGenerator(width=15, height=15, perfect=True, seed=42)
+mg = MazeGenerator(width=15, height=15, perfect=False, seed=42)
 
-# Generate the maze (includes 42 pattern if dimensions allow >= 9x7)
-mg.generate_maze()
+# Generate with a custom imperfection rate (e.g., 20% of walls broken)
+mg.generate_maze(imperfection_rate=0.2)
 
-# Solve the maze
-mg.solve_path(entry_coord=(0, 0), exit_coord=(14, 14))
+# Solve and export
+mg.export_maze_to_file((0, 0), (14, 14), "maze.txt")
 ```
 
 **Constructor parameters:**
@@ -50,37 +71,12 @@ mg.solve_path(entry_coord=(0, 0), exit_coord=(14, 14))
 - `height` (int): Height of the maze (default: 10)
 - `perfect` (bool): generate a perfect maze if perfect is True
 - `seed` (int | None): Random seed for reproducibility (default: None)
+- `imperfection_rate` (float | None): Only for non-perfect mazes. Defines the percentage of extra walls to remove (0.0 to 1.0).
 
-### Methods
-
-#### `generate_maze()`
-Generates the maze using the Iterative Backtracker algorithm. If dimensions allow (minimum 9x7), automatically marks a '42' pattern in the grid.
-
-```python
-mg.generate_maze()
-```
-
-#### `solve_path(entry_coord, exit_coord)`
-Solves the maze using BFS algorithm and marks solution cells. Returns None but updates cell properties.
-
-```python
-# Solve from top-left to bottom-right
-mg.solve_path(entry_coord=(0, 0), exit_coord=(9, 9))
-
-# Check if path was found
-if any(cell.is_solution for row in mg.grid for cell in row):
-    print("Path found!")
-```
-
-#### `replace_seed(new_seed)`
-Changes the random seed for generating a different maze.
-
-```python
-mg.replace_seed(new_seed=123)
-mg.generate_maze()  # Generates a different maze
-```
 
 ### Accessing the Generated Structure
+
+The module provides direct access to the internal data for programmatic use:
 
 ```python
 from mazegen import MazeGenerator
@@ -95,6 +91,10 @@ grid = mg.grid
 # Example: Check if the top-left cell has a North wall
 first_cell = grid[0][0]
 print(f"North wall exists: {first_cell.walls['N']}")
+
+# Access the solution
+# solve_path() uses BFS to find the shortest route
+mg.solve_path(entry_coord=(0, 0), exit_coord=(9, 9))
 
 # Get all solution cells
 solution_cells = [cell for row in grid for cell in row if cell.is_solution]
@@ -125,26 +125,13 @@ cat <<EOF > test_mazegen.py
 from mazegen import MazeGenerator
 
 try:
-    # 1. Initialize Generator (20x20 grid)
-    mg = MazeGenerator(width=20, height=20, perfect=True, seed=42)
-
-    # 2. Generate Maze
-    mg.generate_maze()
-    print("✅ Generation: Success!")
-
-    # 3. Solve from Top-Left (0,0) to Bottom-Right (19,19)
-    # This function returns None, but populates mg.solver
-    mg.solve_path(entry_coord=(0, 0), exit_coord=(19, 19))
-
-    # 4. Check if a solution was actually found by looking at the solver
-    if mg.solver and len(mg.solver.get_solution_directions()) > 0:
-        print("✅ Solving: Success! Path found.")
-        directions = mg.solver.get_solution_directions()
-        print(f"Path Length: {len(directions)} steps")
-        print(f"First 20 moves: {directions[:20]}...")
-    else:
-        print("❌ Solving: No path found.")
-
+    mg = MazeGenerator(width=20, height=20, perfect=False, seed=42)
+    # Generate with 15% imperfection
+    mg.generate_maze(imperfection_rate=0.15)
+    
+    # Export handles solving and file writing
+    mg.export_maze_to_file((0,0), (19,19), "test.map")
+    print("✅ Success: 'test.map' generated!")
 except Exception as e:
     print(f"❌ Error: {e}")
 EOF
