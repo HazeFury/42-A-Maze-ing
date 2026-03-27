@@ -18,7 +18,8 @@ class MazeConfig(BaseModel):
         exit_coord (Tuple[int, int]): Ending coordinates (x, y).
         output_file (str): Path to the output file.
         perfect (bool): Whether the maze is perfect (one unique path).
-        seed (int |None): Seed for reproducibility.
+        seed (int | None): Seed for reproducibility.
+        imperfection_rate (float | None): Rate of the maze imperfection (between 0 and 1)
     """
     # Interdit les clés non définies dans le modèle (ex: faute d'orthographe)
     # popultate_by_name=True permet d'utiliser les alias (ex: WIDTH)
@@ -32,6 +33,7 @@ class MazeConfig(BaseModel):
     output_file: str = Field(alias="OUTPUT_FILE")
     perfect: bool = Field(alias="PERFECT")
     seed: int | None = Field(None, alias="SEED", ge=0)
+    imperfection_rate: float| None = Field(None, alias="IMPERFECTION_RATE", ge=0, le=1)
 
     @field_validator("entry_coord", "exit_coord", mode="before")
     @classmethod
@@ -63,14 +65,16 @@ class MazeConfig(BaseModel):
         return value
 
     @model_validator(mode='after')
-    def check_entry_and_exit(self) -> 'MazeConfig':
-        """Validate that entry and exit are distinct and within bounds.
+    def validate_maze_logic(self) -> 'MazeConfig':
+        """Validate the maze consistency: 
+            Check that entry and exit are distinct and within bounds.
+            Check Perfection vs Imperfection Rate
 
         Returns:
             MazeConfig: The validated instance.
 
         Raises:
-            ValueError: If entry/exit are identical or outside maze dimensions.
+            ValueError: If invalid maze logic
         """
         if self.entry_coord == self.exit_coord:
             raise ValueError("ENTRY or EXIT point must be different")
@@ -91,6 +95,14 @@ class MazeConfig(BaseModel):
         ):
             raise ValueError(f"Invalid EXIT : {self.exit_coord} "
                              f"is outside the maze bounds")
+        
+        if self.perfect and self.imperfection_rate is not None and self.imperfection_rate > 0:
+            raise ValueError(
+                "IMPERFECTION_RATE must be 0 or None if PERFECT is True"
+            )
+        
+        if not self.perfect and self.imperfection_rate == 0:
+            raise ValueError("IMPERFECTION_RATE must be greater than 0 if PERFECT is False")
 
         return self
 

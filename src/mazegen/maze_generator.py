@@ -15,14 +15,16 @@ class MazeGenerator:
             width: int,
             height: int,
             perfect: bool,
-            seed: int | None = None
+            seed: int | None = None,
+            imperfection_rate: float | None = None
             ):
         """Initialize the maze generator with dimensions and randomness settings."""
         self.width = width
         self.height = height
         self.perfect = perfect
+        self.imperfection_rate = imperfection_rate
         self.rng = random.Random(seed)  # générateur de hasard isolé et sécurisé !
-
+        
         # L'Hybride : Une matrice 2D remplie d'objets (Nœuds)
         self.grid = [[Cell(x, y) for x in range(width)] for y in range(height)]
 
@@ -106,7 +108,8 @@ class MazeGenerator:
         # casser quelques murs supplémentaires pour créer des boucles.
         if not self.perfect:
             # On définit ici combien de murs on veut casser (ex: 10 de la grille)
-            nb_to_break = int((self.width * self.height) * 0.1)
+            rate = self.imperfection_rate if self.imperfection_rate is not None else 0.1
+            nb_to_break = int((self.width * self.height) * rate)
             builder.degrade_perfection(nb_to_break)
 
     def solve_path(
