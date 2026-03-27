@@ -36,10 +36,11 @@ mg = MazeGenerator(width=10, height=10, perfect=True)
 # Generate the maze
 mg.generate_maze()
 
-# Solve the maze from entry (0, 0) to exit (9, 9)
-if mg.solve_path(entry_coord=(0, 0), exit_coord=(9, 9)):
-    # Access solution directions via the solver attribute of the mg instance
-    print(mg.solver.get_solution_directions())
+# Solve the maze
+mg.solve_path(entry_coord,exit_coord)
+
+    #TODO : Je ne vois pas comment afficher la solution à partir 
+    #du MazeGenerator. Il faudrait instancier un exporter mis on n'aurait plus alors un module autonome...
 
 # Export to a file (includes hexadecimal grid and solution path)
 mg.export_maze_to_file(
@@ -95,6 +96,7 @@ print(f"North wall exists: {first_cell.walls['N']}")
 # Access the solution
 # solve_path() uses BFS to find the shortest route
 mg.solve_path(entry_coord=(0, 0), exit_coord=(9, 9))
+    #TODO idem Comment on accède directement à la sring de la solution sans passer par l'exporter???
 
 # Get all solution cells
 solution_cells = [cell for row in grid for cell in row if cell.is_solution]

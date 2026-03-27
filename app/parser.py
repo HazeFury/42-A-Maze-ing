@@ -33,7 +33,9 @@ class MazeConfig(BaseModel):
     output_file: str = Field(alias="OUTPUT_FILE")
     perfect: bool = Field(alias="PERFECT")
     seed: int | None = Field(None, alias="SEED", ge=0)
-    imperfection_rate: float| None = Field(None, alias="IMPERFECTION_RATE", ge=0, le=1)
+    imperfection_rate: float | None = Field(
+        None, alias="IMPERFECTION_RATE", ge=0, le=1
+        )
 
     @field_validator("entry_coord", "exit_coord", mode="before")
     @classmethod
@@ -66,7 +68,7 @@ class MazeConfig(BaseModel):
 
     @model_validator(mode='after')
     def validate_maze_logic(self) -> 'MazeConfig':
-        """Validate the maze consistency: 
+        """Validate the maze consistency:
             Check that entry and exit are distinct and within bounds.
             Check Perfection vs Imperfection Rate
 
@@ -95,14 +97,19 @@ class MazeConfig(BaseModel):
         ):
             raise ValueError(f"Invalid EXIT : {self.exit_coord} "
                              f"is outside the maze bounds")
-        
-        if self.perfect and self.imperfection_rate is not None and self.imperfection_rate > 0:
+
+        if (
+            self.perfect and
+            self.imperfection_rate is not None and
+            self.imperfection_rate > 0
+        ):
             raise ValueError(
                 "IMPERFECTION_RATE must be 0 or None if PERFECT is True"
             )
-        
+
         if not self.perfect and self.imperfection_rate == 0:
-            raise ValueError("IMPERFECTION_RATE must be greater than 0 if PERFECT is False")
+            raise ValueError(
+                "IMPERFECTION_RATE must be greater than 0 if PERFECT is False")
 
         return self
 

@@ -16,26 +16,45 @@ class MazeGenerator:
             height: int,
             perfect: bool,
             seed: int | None = None,
-            ):
+            ) -> None:
         """Initialize the maze generator with dimensions and randomness settings."""
+        if (not isinstance(width, int) or
+            not isinstance(height, int) or
+                width < 2 or height < 2):
+            raise ValueError("Maze dimensions must be at least 2x2")
+
+        if not isinstance(perfect, bool):
+            raise TypeError("The 'perfect' parameter must be a boolean.")
+
+        if seed is not None:
+            if not isinstance(seed, int) or seed < 0:
+                raise ValueError("The 'seed' parameter must be a positive integer.")
+
         self.width = width
         self.height = height
         self.perfect = perfect
         self.rng = random.Random(seed)  # générateur de hasard isolé et sécurisé !
-        
+
         # L'Hybride : Une matrice 2D remplie d'objets (Nœuds)
         self.grid = [[Cell(x, y) for x in range(width)] for y in range(height)]
+        # attribut qui passera à `true` quand le maze aura été généré. Permettra de vérifier que
+        # le maze existe avant d'appeler le solver pour éviter le crash.
+        self._generated: bool = False
+        # attribut qui passera à `true` quand une solution aur été toruvée. Permettra de vérifier que
+        # la solution existe avant d'essayer de l'exporter.
+        self._solved: bool = False
 
-    # =========================================================================
     def replace_seed(self, new_seed: int | None = None) -> None:
         """Change the seed of the MazeGenerator. Useful if you want to
         generate a maze based on a new seed"""
+        if not isinstance(new_seed, int) or new_seed < 0:
+            raise ValueError("The 'seed' parameter must be a positive integer.")
+
         print(f"avant : {self.rng}")
         self.rng = random.Random(new_seed)
         print(f"apres : {self.rng}")
         # si le paramètre est None, on se base sur l'heure pour le random
 
-    # =========================================================================
     def get_cell(self, x: int, y: int) -> Cell | None:
         """
         Return the cell at coordinates (x, y)
@@ -45,7 +64,6 @@ class MazeGenerator:
             return self.grid[y][x]
         return None
 
-    # =========================================================================
     def _apply_42_pattern(self) -> None:
         """
         Marks a '42' pattern in the grid if dimensions allow (min 9x7).
@@ -77,13 +95,11 @@ class MazeGenerator:
             cell.is_part_of_42 = True
             cell.visited = True
 
-    # =========================================================================
     def reset_grid(self) -> None:
         """Reset the grid by creating new Cell objects for every coordinate."""
         self.grid = [[Cell(x, y) for x in range(self.width)]
                      for y in range(self.height)]
 
-    # =========================================================================
     def generate_maze(self, imperfection_rate: float | None = None) -> None:
         """
         Coordinate the maze construction process.
@@ -110,21 +126,53 @@ class MazeGenerator:
             nb_to_break = int((self.width * self.height) * rate)
             builder.degrade_perfection(nb_to_break)
 
+        self._generated = True
+
     def solve_path(
             self, entry_coord: tuple[int, int], exit_coord: tuple[int, int]
             ) -> None:
-        # (Code théorique)
+        """
+        Solve the maze using BFS algorithm.
+
+        Args:
+            entry_coord (tuple): (x, y) coordinates for the start.
+            exit_coord (tuple): (x, y) coordinates for the end.
+
+        Raises:
+            ValueError: If coordinates are out of grid bounds.
+            RuntimeError: If the maze has not been generated yet.
+        """
+        # vérifie que entry et exit sont bien dans les limites du maze
+        if not self.get_cell(*entry_coord) or not self.get_cell(*exit_coord):
+            raise ValueError("Invalid entry or exit.")
+
+        # vérifie que le maze a été instancié avant qu on appelle le solver:
+        if not getattr(self, "_generated", False):
+            raise RuntimeError("Instanciate maze before calling solver.")
+
         solver = Solver(
             self.grid, self.width, self.height, entry_coord, exit_coord
             )
         solver.solve()
         # Parfait, on a une solution ! On peut marquer les cellules du chemin.
+        self._solved = True
 
     def export_maze_to_file(
             self, entry_coord: tuple[int, int],
             exit_coord: tuple[int, int],
             filename: str
             ) -> None:
+        """
+        Export the maze structure, coordinates, and solution to a file.
+
+        The exported file contains the hexadecimal representation of the grid,
+        followed by the entry/exit coordinates and the cardinal directions
+        of the solution path.
+        """
+
+        # vérifie que le maze a été instancié avant qu on appelle le solver:
+        if not getattr(self, "_solved", False):
+            raise RuntimeError("Solve maze before exportation.")
 
         exporter = Exporter(
             self.grid,
