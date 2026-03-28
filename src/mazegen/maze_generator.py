@@ -22,7 +22,7 @@ class MazeGenerator:
         self.height = height
         self.perfect = perfect
         self.rng = random.Random(seed)  # générateur de hasard isolé et sécurisé !
-        
+
         # L'Hybride : Une matrice 2D remplie d'objets (Nœuds)
         self.grid = [[Cell(x, y) for x in range(width)] for y in range(height)]
 
