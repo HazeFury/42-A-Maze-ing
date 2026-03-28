@@ -39,20 +39,24 @@ class MazeGenerator:
         self.grid = [[Cell(x, y) for x in range(width)] for y in range(height)]
         # attribut qui passera à `true` quand le maze aura été généré. Permettra de vérifier que
         # le maze existe avant d'appeler le solver pour éviter le crash.
-        self._generated: bool = False
+        self._has_been_generated: bool = False
         # attribut qui passera à `true` quand une solution aur été toruvée. Permettra de vérifier que
         # la solution existe avant d'essayer de l'exporter.
-        self._solved: bool = False
+        self._has_been_solved: bool = False
 
-    def replace_seed(self, new_seed: int | None = None) -> None:
+    def replace_seed(self, new_seed: int | float | str | None = None) -> None:
         """Change the seed of the MazeGenerator. Useful if you want to
         generate a maze based on a new seed"""
-        if not isinstance(new_seed, int) or new_seed < 0:
-            raise ValueError("The 'seed' parameter must be a positive integer.")
 
-        print(f"avant : {self.rng}")
+        if new_seed is None:
+            self.rng = random.Random(None)
+            return
+
+        if not isinstance(new_seed, (int, float, str)):
+            raise TypeError("'seed' parameter must be an integer, a float,"
+                            " a string or None.")
+
         self.rng = random.Random(new_seed)
-        print(f"apres : {self.rng}")
         # si le paramètre est None, on se base sur l'heure pour le random
 
     def get_cell(self, x: int, y: int) -> Cell | None:
@@ -99,6 +103,8 @@ class MazeGenerator:
         """Reset the grid by creating new Cell objects for every coordinate."""
         self.grid = [[Cell(x, y) for x in range(self.width)]
                      for y in range(self.height)]
+        self._has_been_generated = False
+        self._has_been_solved = False
 
     def generate_maze(self, imperfection_rate: float | None = None) -> None:
         """
@@ -107,6 +113,13 @@ class MazeGenerator:
         Apply the '42' pattern and handle both perfect and
         imperfect maze generation based on settings.
         """
+        if imperfection_rate is not None:
+            if not isinstance(imperfection_rate, float) or \
+                        imperfection_rate <= 0.0 or imperfection_rate >= 1.0:
+                raise ValueError("The 'imperfection_rate' parameter must be"
+                                 " a float.\nValue must be : "
+                                 "0.0 > imperfection_rate < 1.0.")
+
         # 1. On applique le motif 42 (qui mettra certaines cases en visited=True et is_part_of_42=True)
         self._apply_42_pattern()
 
@@ -126,7 +139,7 @@ class MazeGenerator:
             nb_to_break = int((self.width * self.height) * rate)
             builder.degrade_perfection(nb_to_break)
 
-        self._generated = True
+        self._has_been_generated = True
 
     def solve_path(
             self, entry_coord: tuple[int, int], exit_coord: tuple[int, int]
@@ -147,15 +160,29 @@ class MazeGenerator:
             raise ValueError("Invalid entry or exit.")
 
         # vérifie que le maze a été instancié avant qu on appelle le solver:
-        if not getattr(self, "_generated", False):
-            raise RuntimeError("Instanciate maze before calling solver.")
+        if not getattr(self, "_has_been_generated", False):
+            raise RuntimeError("You must generate maze before calling solver.")
 
         solver = Solver(
             self.grid, self.width, self.height, entry_coord, exit_coord
             )
-        solver.solve()
-        # Parfait, on a une solution ! On peut marquer les cellules du chemin.
-        self._solved = True
+        if solver.solve():
+            self._solved = True
+
+    def get_solution_in_str(
+            self,
+            entry_coord: tuple[int, int],
+            exit_coord: tuple[int, int]) -> str:
+
+        exporter = Exporter(
+            self.grid,
+            self.width,
+            self.height,
+            entry_coord,
+            exit_coord,
+            )
+
+        return exporter.get_solution_directions()
 
     def export_maze_to_file(
             self, entry_coord: tuple[int, int],
@@ -170,17 +197,12 @@ class MazeGenerator:
         of the solution path.
         """
 
-        # vérifie que le maze a été instancié avant qu on appelle le solver:
-        if not getattr(self, "_solved", False):
-            raise RuntimeError("Solve maze before exportation.")
-
         exporter = Exporter(
             self.grid,
             self.width,
             self.height,
             entry_coord,
             exit_coord,
-            filename
             )
 
-        exporter.write_output_file()
+        exporter.write_output_file(self._has_been_generated, filename)

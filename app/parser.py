@@ -34,7 +34,7 @@ class MazeConfig(BaseModel):
     perfect: bool = Field(alias="PERFECT")
     seed: int | None = Field(None, alias="SEED", ge=0)
     imperfection_rate: float | None = Field(
-        None, alias="IMPERFECTION_RATE", ge=0, le=1
+        None, alias="IMPERFECTION_RATE", gt=0, lt=1
         )
 
     @field_validator("entry_coord", "exit_coord", mode="before")
