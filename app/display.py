@@ -14,7 +14,7 @@ class MazeDisplay:
         self.SOL_CHAR = "██"
         self.entry_coord = entry_coord
         self.exit_coord = exit_coord
-        self.wall_colors = [1, 6, 7, 8, 9, 10]
+        self.wall_colors = [6, 7, 8, 9, 10, 11]
         self.current_wall_color_idx = 0
 
     def _init_colors(self) -> None:
@@ -26,6 +26,8 @@ class MazeDisplay:
         curses.start_color()
 
         # ========  ITEMS  =============
+        # Red background for error message
+        curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_YELLOW)
         # Yellow inside "42" pattern
         curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
         # Cyan for solution path
@@ -37,17 +39,17 @@ class MazeDisplay:
 
         # ========  WALLS  ==============
         # White (basic color)
-        curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        curses.init_pair(6, curses.COLOR_WHITE, curses.COLOR_BLACK)
         # Violet (magenta)
-        curses.init_pair(6, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+        curses.init_pair(7, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
         # Blue
-        curses.init_pair(7, curses.COLOR_BLUE, curses.COLOR_BLACK)
+        curses.init_pair(8, curses.COLOR_BLUE, curses.COLOR_BLACK)
         # Orange
-        curses.init_pair(8, 166, curses.COLOR_BLACK)
+        curses.init_pair(9, 166, curses.COLOR_BLACK)
         # Rose
-        curses.init_pair(9, 163, curses.COLOR_BLACK)
+        curses.init_pair(10, 163, curses.COLOR_BLACK)
         # Grey
-        curses.init_pair(10, 244, curses.COLOR_BLACK)
+        curses.init_pair(11, 244, curses.COLOR_BLACK)
 
     def _draw_maze(self, stdscr: curses.window, is_showing_path: bool) -> None:
         """
@@ -72,7 +74,7 @@ class MazeDisplay:
 
                 try:
                     # --- 1. DÉTERMINATION DU CENTRE (Couleur et Caractère) ---
-                    color = curses.color_pair(1)
+                    color = curses.color_pair(6)
                     char_to_draw = self.PATH_CHAR  # Par défaut : vide
 
                     if cell.is_part_of_42:
@@ -151,7 +153,11 @@ class MazeDisplay:
         curses.curs_set(0)
         self._init_colors()
         is_showing_path: bool = True
-        margin: int = 10
+        margin: int = 12
+        no_gen_msg: str = "WARNING: Maze has not been generated yet"
+        no_solv_base: str = "WARNING: Maze has any solution"
+        cause_42_msg: str = "(entry or exit point is in the '42' pattern)"
+        too_small_for_42: str = "WARNING: Maze too small for '42' pattern"
 
         # On calcule la taille "physique" dont notre labyrinthe a besoin sur l'écran
         # Axe Y : (hauteur * 2) + 1 (pour les murs) + 2 (pour la marge et la barre d'infos)
@@ -159,7 +165,7 @@ class MazeDisplay:
 
         # Axe X : (largeur * 4) + 2 (pour les murs) + 2 (marge)
         # On multiplie par 4 car chaque cellule fait 2 caractères de large + l'espacement
-        required_x = (self.maze.width * 4) + 4
+        required_x = (self.maze.width * 4) + margin
 
         #  La Boucle d'Événements (écoute le clavier et les évènement de resize en temps réel)
         while True:
@@ -169,10 +175,19 @@ class MazeDisplay:
 
             # LE VIDEUR DU BOÎTE DE NUIT (Le check de taille)
             if max_y < required_y or max_x < required_x:
-                warning = "⚠️  Terminal too small! Enlarge the window."
-                # On centre le message d'erreur
+                warning: list[str] = [
+                    " ⚠️  ",
+                    "   Terminal too small !   ",
+                    "    Enlarge the window.   ",
+                    " Press 'q' or '4' to quit "
+                    ]
+
+                # On centre les messages de warning
                 try:
-                    stdscr.addstr(max_y // 2, (max_x - len(warning)) // 2, warning, curses.color_pair(1) | curses.A_BOLD)
+                    start_y = (max_y - len(warning)) // 2
+                    for i, line in enumerate(warning):
+                        stdscr.addstr(start_y + i, (max_x - len(line)) // 2,
+                                      line, curses.A_REVERSE | curses.A_BOLD)
                 except curses.error:
                     raise Exception("Terminal (very) too small! Please"
                                     " enlarge the window to launch display")
@@ -181,7 +196,21 @@ class MazeDisplay:
                 # La fenêtre est assez grande, on dessine la merveille !
                 self._draw_maze(stdscr, is_showing_path)
 
-                instructions = [
+                if not self.maze._has_been_generated:
+                    stdscr.addstr(max_y - 9, 2, no_gen_msg,
+                                  curses.color_pair(1))
+
+                if not self.maze._has_been_solved:
+                    no_solv_msg: str = f"{no_solv_base} {cause_42_msg}" \
+                        if self.maze._has_been_generated else no_solv_base
+                    stdscr.addstr(max_y - 8, 2, no_solv_msg,
+                                  curses.color_pair(1))
+                
+                if self.maze.width < 9 or self.maze.height < 7:
+                    stdscr.addstr(max_y - 10, 2, too_small_for_42,
+                                  curses.color_pair(1))
+
+                instructions: list[str] = [
                     "============  A-Maze-ing  ============",
                     " 1. Re-generate a new maze            ",
                     " 2. Show/Hide path from entry to exit ",
@@ -204,7 +233,7 @@ class MazeDisplay:
             # Astuce: si l'utilisateur redimensionne la fenêtre, curses génère une touche spéciale (curses.KEY_RESIZE)
             key = stdscr.getch()
 
-            if key == ord('4'):
+            if key == ord('4') or key == ord('q'):
                 break  # On sort de la boucle, le wrapper va fermer l'écran proprement
             if key == ord('2'):
                 is_showing_path = not is_showing_path

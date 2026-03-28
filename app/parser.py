@@ -26,8 +26,8 @@ class MazeConfig(BaseModel):
     # pour créer les attributs (ex: width)
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    width: int = Field(alias="WIDTH", ge=2)
-    height: int = Field(alias="HEIGHT", ge=2)
+    width: int = Field(alias="WIDTH", ge=2, le=100)
+    height: int = Field(alias="HEIGHT", ge=2, le=100)
     entry_coord: tuple[int, int] = Field(alias="ENTRY")
     exit_coord: tuple[int, int] = Field(alias="EXIT")
     output_file: str = Field(alias="OUTPUT_FILE")

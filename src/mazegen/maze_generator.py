@@ -167,7 +167,7 @@ class MazeGenerator:
             self.grid, self.width, self.height, entry_coord, exit_coord
             )
         if solver.solve():
-            self._solved = True
+            self._has_been_solved = True
 
     def get_solution_in_str(
             self,
