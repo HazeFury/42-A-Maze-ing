@@ -174,7 +174,9 @@ class MazeDisplay:
                 try:
                     stdscr.addstr(max_y // 2, (max_x - len(warning)) // 2, warning, curses.color_pair(1) | curses.A_BOLD)
                 except curses.error:
-                    pass  # Si le terminal est vraiment minuscule (genre 2x2), on ignore
+                    raise Exception("Terminal (very) too small! Please"
+                                    " enlarge the window to launch display")
+
             else:
                 # La fenêtre est assez grande, on dessine la merveille !
                 self._draw_maze(stdscr, is_showing_path)

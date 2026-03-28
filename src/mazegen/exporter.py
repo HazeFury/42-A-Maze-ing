@@ -109,6 +109,7 @@ class Exporter:
                 output.write("\n")
                 output.write(f"{entry_x},{entry_y}\n")
                 output.write(f"{exit_x},{exit_y}\n")
-                output.write(f"{solution_directions}\n")
+                if not solution_directions == "":
+                    output.write(f"{solution_directions}\n")
         except Exception as e:
             raise Exception(f"ERROR : {e}")
