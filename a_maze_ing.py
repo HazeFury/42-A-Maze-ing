@@ -32,7 +32,7 @@ def main():
             seed=data.seed
             )
 
-        # maze.generate_maze(imperfection_rate=data.imperfection_rate)
+        maze.generate_maze(imperfection_rate=data.imperfection_rate)
         maze.solve_path(
             entry_coord=data.entry_coord,
             exit_coord=data.exit_coord

@@ -103,7 +103,8 @@ class MazeGenerator:
         """Reset the grid by creating new Cell objects for every coordinate."""
         self.grid = [[Cell(x, y) for x in range(self.width)]
                      for y in range(self.height)]
-        
+        self._has_been_generated = False
+        self._has_been_solved = False
 
     def generate_maze(self, imperfection_rate: float | None = None) -> None:
         """
@@ -116,7 +117,7 @@ class MazeGenerator:
             if not isinstance(imperfection_rate, float) or \
                         imperfection_rate <= 0.0 or imperfection_rate >= 1.0:
                 raise ValueError("The 'imperfection_rate' parameter must be"
-                                 " a float. Value must be : "
+                                 " a float.\nValue must be : "
                                  "0.0 > imperfection_rate < 1.0.")
 
         # 1. On applique le motif 42 (qui mettra certaines cases en visited=True et is_part_of_42=True)
@@ -168,6 +169,21 @@ class MazeGenerator:
         if solver.solve():
             self._solved = True
 
+    def get_solution_in_str(
+            self,
+            entry_coord: tuple[int, int],
+            exit_coord: tuple[int, int]) -> str:
+
+        exporter = Exporter(
+            self.grid,
+            self.width,
+            self.height,
+            entry_coord,
+            exit_coord,
+            )
+
+        return exporter.get_solution_directions()
+
     def export_maze_to_file(
             self, entry_coord: tuple[int, int],
             exit_coord: tuple[int, int],
@@ -181,17 +197,12 @@ class MazeGenerator:
         of the solution path.
         """
 
-        # vérifie que le maze a été instancié avant qu on appelle le solver:
-        # if not getattr(self, "_solved", False):
-        #     raise RuntimeError("Solve maze before exportation.")
-
         exporter = Exporter(
             self.grid,
             self.width,
             self.height,
             entry_coord,
             exit_coord,
-            filename
             )
 
-        exporter.write_output_file()
+        exporter.write_output_file(self._has_been_generated, filename)

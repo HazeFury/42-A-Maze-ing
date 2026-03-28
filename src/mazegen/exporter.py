@@ -16,14 +16,12 @@ class Exporter:
             height: int,
             entry_coord: tuple[int, int],
             exit_coord: tuple[int, int],
-            filename: str
             ) -> None:
         self.grid = grid
         self.width = width
         self.height = height
         self.entry_coord = entry_coord
         self.exit_coord = exit_coord
-        self.filename = filename
 
     def _get_maze_to_hex(self) -> list[str]:
         """Translates the maze grid into a list of hexadecimal strings.
@@ -48,7 +46,7 @@ class Exporter:
 
         return maze_hex
 
-    def _get_solution_directions(self) -> str:
+    def get_solution_directions(self) -> str:
         """
         Convert the path of Cells into a string of cardinal directions.
 
@@ -56,12 +54,18 @@ class Exporter:
         """
 
         solver = Solver(
-            self.grid, self.width, self.height, self.entry_coord, self.exit_coord
+            self.grid, self.width, self.height, self.entry_coord,
+            self.exit_coord
             )
         solver.solve()
-
+        # TODO: Est-ce que Steph est ok avec cette approche ?
         if not solver.path or len(solver.path) < 2:
-            return ""
+            raise Exception("No solution on the current maze.\n"
+                            "Consider checking the following steps :\n"
+                            "- Verify that the maze has been generated\n"
+                            "- Verify that entry and exit coordinates are not"
+                            " on the '42' pattern. If so, it is normal to not"
+                            " have any solution.")
 
         directions: list[str] = []
 
@@ -82,7 +86,9 @@ class Exporter:
 
         return "".join(directions)
 
-    def write_output_file(self) -> None:
+    def write_output_file(
+            self, has_been_generated: bool, filename: str
+            ) -> None:
         """Writes the maze layout and solution to the specified file.
 
         The file format includes:
@@ -95,14 +101,19 @@ class Exporter:
         Raises:
             Exception: If an error occurs during file opening or writing.
         """
+        # TODO: Est-ce que Steph est ok avec cette approche ?
+        if not has_been_generated:
+            raise Exception("Unauthorized action : You cannot export a maze"
+                            " not generated yet.\nCurrently, there is just a"
+                            " fully closed grid. It's useless to export that.")
 
         maze_hex_list: list[str] = self._get_maze_to_hex()
-        solution_directions: str = self._get_solution_directions()
+        solution_directions: str = self.get_solution_directions()
         entry_x, entry_y = self.entry_coord
         exit_x, exit_y = self.exit_coord
 
         try:
-            with open(self.filename, "w") as output:
+            with open(filename, "w") as output:
                 for line in maze_hex_list:
                     output.write(f"{line}\n")
 
