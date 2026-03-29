@@ -4,10 +4,14 @@ from mazegen.maze_generator import MazeGenerator
 from app.display import MazeDisplay
 
 
+def red_text(text) -> str:
+    return f"\033[31m{text}\033[0m"
+
+
 def main():
 
     if len(sys.argv) > 2:
-        print("[ERROR] Too many arguments!"
+        print(f"[{red_text('ERROR')}] Too many arguments!"
               " This project takes only 1 argument to work")
         print("Try the following commands :"
               "\n'python3 a_maze_ing.py config.txt'")
@@ -21,7 +25,7 @@ def main():
             print("[WARNING]: Maze size is too small to draw the '42' "
                   "pattern.\n The maze will be generated without it.")
     except Exception as e:
-        print("[ERROR] An error occured during parsing.")
+        print(f"[{red_text('ERROR')}] An error occured during parsing.")
         print(f"More details below :\n\n=> {e}")
         sys.exit(1)
 
@@ -44,7 +48,7 @@ def main():
             filename=data.output_file
             )
     except Exception as e:
-        print("[ERROR] An error occured in the program.")
+        print(f"[{red_text('ERROR')}] An error occured in the program.")
         print(f"More details below :\n\n=> {e}")
     else:
         try:
@@ -55,7 +59,8 @@ def main():
                 )
             display.start()
         except Exception as e:
-            print("[ERROR] An error occured when trying to display")
+            print(f"[{red_text('ERROR')}] An error occured when trying"
+                  "to display")
             print(f"More details below :\n\n=> {e}")
 
 
