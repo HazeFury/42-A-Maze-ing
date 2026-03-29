@@ -16,6 +16,7 @@ def main():
 
     try:
         data = parsing_config_file(sys.argv[1])
+        # TODO: Est-ce que Steph est ok avec cette approche ?
         if data.width < 9 or data.height < 7:
             print("[WARNING]: Maze size is too small to draw the '42' "
                   "pattern.\n The maze will be generated without it.")
