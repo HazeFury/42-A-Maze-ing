@@ -1,10 +1,24 @@
 *This project has been created as part of the 42 curriculum by marberge, stmaire.*
 
+<div align="center">
+<br>
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQPzuYKu7n0cWUYa5Kbg0_LrlEQAIURWeo9A&s" alt="42 Logo" width="400" />
+
+  <br>
+</div>
+
 # A-Maze-ing 
 
 ## I. Description
 
 **A-Maze-ing** is a comprehensive Python package dedicated to the generation and resolution of two-dimensional mazes. Developed as part of the 42 curriculum, this project implements fundamental graph theory algorithms to transform a blank grid into a complex, structured puzzle.
+
+<div align="center">
+<br>
+  <img src="assets/amazing_picture.png" alt="Animation BFS" width="500" />
+
+  <br>
+</div>
 
 ### Project Goals
 
@@ -210,7 +224,13 @@ IMPERFECTION_RATE=0.2
 ### 2. Maze Generation Algorithm: Iterative Backtracking
 We implemented **Iterative Backtracking**, which is based on a **Depth-First Search (DFS)** approach using an **explicit stack**.
 
-![Maze Generation Animation](animations/dfs_generation.gif)
+<div align="center">
+<br>
+  <img src="assets/dfs_generation.gif" alt="Maze animation DFS" width="300" />
+
+  <br>
+</div>
+
 
 #### How it works:
 * **Start**: Pick a starting cell, mark it as "visited", and push it into a **stack**.
@@ -229,7 +249,13 @@ We selected **Iterative Backtracking** for three specific reasons:
 ### 4. Maze Solving Algorithm: Breadth-First Search (BFS)
 To find the exit, we implemented the **Breadth-First Search (BFS)** algorithm. This approach explores the maze layer by layer, starting from the entry point.
 
-![Maze Generation Animation](animations/bfs.gif)
+<div align="center">
+<br>
+  <img src="assets/bfs.gif" alt="Animation BFS" width="300" />
+
+  <br>
+</div>
+
 
 #### How it works:
 1.  **Initialize**: Place the `ENTRY` coordinates into a **Queue** and mark the cell as visited.
@@ -250,6 +276,10 @@ We chose BFS over other algorithms (like DFS) for two main reasons:
 * **Efficiency**: While DFS might find *a* path faster in some cases, it often finds a very long and inefficient one. BFS ensures the solution we display is always the most optimal.
 
 ## V. Reusability
+
+The core of this project has been thinked and made to be reused. The construction of the maze, the solver and the exporter are all included in the `mazegen` module. Code left inside app directory is just here to parse the config file and display the maze.
+
+You can find the documentation on `mazegen` module [here](src/mazegen/README.md).
 
 ## VI. Project Management
 
@@ -320,3 +350,4 @@ Our project was managed as a **50-hour intensive development cycle**, executed o
     * **Maze Solving (BFS)**: Inspired by the Breadth-First Search visualization from the Wikimedia Commons algorithm collection, licensed under [Public Domain](https://creativecommons.org/publicdomain/zero/1.0/).
 
 ### 2. AI Usage Disclosure
+
