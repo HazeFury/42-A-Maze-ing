@@ -69,11 +69,30 @@ mg.generate_maze(imperfection_rate=0.2)
 | `height` | `int` | **Required** | Height of the maze (minimum 2). |
 | `perfect` | `bool` | **Required** | `True` for a unique path, `False` for loops. |
 | `seed` | `int, str, float, None` | `None` | Seed for reproducibility (accepts `int`, `str`, `float`). |
+| `imperfection_rate` | `float` | `0.1` | Only for non-perfect mazes. Defines the percentage of additional walls to remove (0.0 to 1.0) to create loops and multiple paths. |
 
 
 ### Accessing the Generated Structure
 
 The module provides direct access to the internal data for programmatic use.
+
+### The Cell Object
+
+The maze is composed of a 2D grid of `Cell` objects.
+
+| Attribute | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `x`, `y` | `int` | **Required** | The horizontal and vertical coordinates in the grid. |
+| `visited` | `bool` | `False` | Used by the `MazeBuilder` to track progress during generation. |
+| `walls` | `dict` | `All True` | A dictionary `{"N", "E", "S", "W"}` representing the 4 physical walls. |
+| `is_part_of_42` | `bool` | `False` | Flag identifying if the cell belongs to the decorative "42" pattern. |
+| `is_solution` | `bool` | `False` | Flag identifying if the cell is part of the shortest path found by the solver. |
+| `path_connections`| `dict` | `All False` | Stores the directions (`N, E, S, W`) of the solution path for rendering. |
+
+#### Logic & Connectivity
+Initially, each cell is a **solid block** with all four walls set to `True`. 
+* **Maze Generation**: The `MazeBuilder` "sculpts" the maze by breaking walls (setting them to `False`) to create passages between cells.
+* **Pathfinding**: Once solved, the `is_solution` flag is toggled for all cells on the solution path. The `path_connections` attribute specifically stores the flow of the solution, which is used to generate the final cardinal direction string (N, S, E, W).
 
 #### The Grid Structure
 
@@ -145,6 +164,15 @@ pip install mazegen-1.0.0-py3-none-any.whl
 
 ### 3. Run a full integration test (Generation + Solving)
 
+This script demonstrates a complete workflow: instantiating a maze, generating its structure with imperfections, solving it, and exporting the result.
+
+**The test will:**
+- Create a 20×20 non-perfect maze with a fixed seed for reproducibility
+- Generate the maze with a 15% imperfection rate (creating loops and multiple paths)
+- Solve the maze and export the result to `test.map`
+
+**Copy and paste this command into your terminal:**
+
 ```bash
 cat <<EOF > test_mazegen.py
 from mazegen import MazeGenerator
@@ -155,7 +183,7 @@ try:
     mg.generate_maze(imperfection_rate=0.15)
     
     # Export handles solving and file writing
-    mg.export_maze_to_file((0,0), (19,19), "test.map")
+    mg.export_maze_to_file((0, 0), (19, 19), "test.map")
     print("✅ Success: 'test.map' generated!")
 except Exception as e:
     print(f"❌ Error: {e}")
