@@ -158,7 +158,7 @@ IMPERFECTION_RATE=0.2
 ### 2. Maze Generation Algorithm: Iterative Backtracking
 We implemented **Iterative Backtracking**, which is based on a **Depth-First Search (DFS)** approach using an **explicit stack**.
 
-![Maze Generation Animation](maze_generation.gif)
+![Maze Generation Animation](animations/dfs_generation.gif)
 
 #### How it works:
 * **Start**: Pick a starting cell, mark it as "visited", and push it into a **stack**.
@@ -176,6 +176,8 @@ We selected **Iterative Backtracking** for three specific reasons:
 
 ### 4. Maze Solving Algorithm: Breadth-First Search (BFS)
 To find the exit, we implemented the **Breadth-First Search (BFS)** algorithm. This approach explores the maze layer by layer, starting from the entry point.
+
+![Maze Generation Animation](animations/bfs.gif)
 
 #### How it works:
 1.  **Initialize**: Place the `ENTRY` coordinates into a **Queue** and mark the cell as visited.
@@ -260,5 +262,9 @@ Our project was managed as a **50-hour intensive development cycle**, executed o
 ## VII. Resources
 
 ### 1. References
+
+* **Visual Assets**:
+    * **Maze Generation (DFS)**: Based on the "Recursive Backtracking" animation by [Dshook](https://commons.wikimedia.org/wiki/User:Dshook), licensed under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+    * **Maze Solving (BFS)**: Inspired by the Breadth-First Search visualization from the Wikimedia Commons algorithm collection, licensed under [Public Domain](https://creativecommons.org/publicdomain/zero/1.0/).
 
 ### 2. AI Usage Disclosure
