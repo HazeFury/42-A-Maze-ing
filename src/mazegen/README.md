@@ -78,13 +78,28 @@ The module provides direct access to the internal data for programmatic use.
 
 ### The Cell Object
 
-The maze is composed of a 2D grid of `Cell` objects.
+The maze is composed of a 2D grid of `Cell` objects (`list[list[Cell]]`).
+
+In order to help you to visualize the structure of the Grid in your head, here is a visual representation of a 4x4 grid :
+
+```
+[
+	[Cell(0,0), Cell(1,0), Cell(2,0), Cell(3,0)],
+	[Cell(0,1), Cell(1,1), Cell(2,1), Cell(3,1)],
+	[Cell(0,2), Cell(1,2), Cell(2,2), Cell(3,2)],
+	[Cell(0,3), Cell(1,3), Cell(2,3), Cell(3,3)],
+]
+```
+
+Each Cell has attributes to help you know his current state :
+
+
 
 | Attribute | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `x`, `y` | `int` | **Required** | The horizontal and vertical coordinates in the grid. |
 | `visited` | `bool` | `False` | Used by the `MazeBuilder` to track progress during generation. |
-| `walls` | `dict` | `All True` | A dictionary `{"N", "E", "S", "W"}` representing the 4 physical walls. |
+| `walls` | `dict` | `All True` | A dictionary `{"N", "E", "S", "W"}` representing the 4 physical walls (`True` means there is a wall).|
 | `is_part_of_42` | `bool` | `False` | Flag identifying if the cell belongs to the decorative "42" pattern. |
 | `is_solution` | `bool` | `False` | Flag identifying if the cell is part of the shortest path found by the solver. |
 | `path_connections`| `dict` | `All False` | Stores the directions (`N, E, S, W`) of the solution path for rendering. |
