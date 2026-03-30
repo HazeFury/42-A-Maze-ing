@@ -13,11 +13,11 @@ class Cell:
         # Stocke les directions des connexions du chemin de la solution.
         # N=North, E=East, S=South, W=West. Par défaut, aucune connexion.
 
-    def break_wall(self, direction: str):
+    def break_wall(self, direction: str) -> None:
         """Casser un mur revient à créer une arête dans notre graphe."""
         self.walls[direction] = False
 
-    def repair_wall(self, direction: str):
+    def repair_wall(self, direction: str) -> None:
         """Remet un mur (ferme l'arête du graphe)."""
         self.walls[direction] = True
 

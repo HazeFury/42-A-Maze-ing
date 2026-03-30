@@ -4,11 +4,11 @@ from mazegen.maze_generator import MazeGenerator
 from app.display import MazeDisplay
 
 
-def red_text(text) -> str:
+def red_text(text: str) -> str:
     return f"\033[31m{text}\033[0m"
 
 
-def main():
+def main() -> None:
 
     if len(sys.argv) > 2:
         print(f"[{red_text('ERROR')}] Too many arguments!"
