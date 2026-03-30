@@ -155,35 +155,107 @@ IMPERFECTION_RATE=0.2
 | **SEED** | (Optional) A value to initialize the random generator for reproducible mazes. |
 | **IMPERFECTION_RATE** | Used only if `PERFECT=False`. A float (**0.0 to 1.0**) representing the percentage of additional walls to remove to create loops. |
 
-### 2. Maze Generation Algorithm: Recursive Backtracking
-We implemented **Recursive Backtracking**, which is based on a **Depth-First Search (DFS)** approach.
+### 2. Maze Generation Algorithm: Iterative Backtracking
+We implemented **Iterative Backtracking**, which is based on a **Depth-First Search (DFS)** approach using an **explicit stack**.
 
-
+![Maze Generation Animation](maze_generation.gif)
 
 #### How it works:
-* **Start**: Pick a starting cell and mark it as "visited".
-* **Move**: Randomly select an unvisited neighbor, "break" the wall between the two cells, and move to that neighbor.
-* **Backtrack**: If a cell has no unvisited neighbors (a dead-end), the algorithm goes back to the previous cell and repeats the process until every cell in the grid has been visited.
-* **Imperfection Pass**: If `PERFECT` is set to `False`, the builder performs an extra step to remove a specific percentage of remaining walls, creating shortcuts and cycles.
+* **Start**: Pick a starting cell, mark it as "visited", and push it into a **stack**.
+* **Move**: While the stack is not empty, randomly select an unvisited neighbor of the current cell, "break" the wall between them, mark the neighbor as visited, and push it onto the stack.
+* **Backtrack**: If a cell has no unvisited neighbors (a dead-end), the algorithm **pops** the cell from the stack to return to the previous one and continues the search.
+* **Finish**: The process repeats until the stack is empty, ensuring every cell in the grid has been visited.
+* **Imperfection Pass**: If `PERFECT` is set to `False`, the builder performs an extra step to remove a specific percentage of remaining walls (`IMPERFECTION_RATE`), creating shortcuts and cycles.
 
 ### 3. Why this Algorithm?
-We selected **Recursive Backtracking** for three specific reasons:
+We selected **Iterative Backtracking** for three specific reasons:
 
-* **High-Quality Mazes**: Unlike other methods (like Prim’s), it creates mazes with **long, winding corridors** and fewer intersections. This makes the maze more challenging to solve and more visually interesting.
-* **Perfect Logic**: It naturally guarantees a **"perfect" maze** where every cell is reachable and there are no isolated areas. This provides a solid base before we manually add loops for the "non-perfect" mode.
-* **Easy Implementation**: The algorithm's need to track "visited" cells and "walls" matches our **`Cell` object** perfectly. Each cell carries its own data, making the generator's movement through the grid simple to code and debug.
+* **High-Quality Mazes**: It creates mazes with **long, winding corridors** and fewer intersections. This makes the maze more challenging to solve and more visually interesting.
+* **Algorithmic Scalability**: By using an **explicit stack** instead of recursion, we bypass Python's default recursion limit. This allows the generator to create massive grids without risk of a `RecursionError`.
+* **Data Synergy**: The algorithm's need to track "visited" cells and "walls" matches our **`Cell` object** perfectly. Each cell carries its own state, making the stack-based movement through the grid simple to code, debug, and maintain.
+
+### 4. Maze Solving Algorithm: Breadth-First Search (BFS)
+To find the exit, we implemented the **Breadth-First Search (BFS)** algorithm. This approach explores the maze layer by layer, starting from the entry point.
+
+#### How it works:
+1.  **Initialize**: Place the `ENTRY` coordinates into a **Queue** and mark the cell as visited.
+2.  **Explore**: Take the first cell from the queue and check its neighbors (North, South, East, West).
+3.  **Validate**: For each neighbor, if there is no wall between it and the current cell AND it hasn't been visited yet:
+    * Mark it as visited.
+    * Store a reference to its "parent" (the current cell) to reconstruct the path later.
+    * Add it to the queue.
+4.  **Finish**: Repeat until the `EXIT` coordinates are reached or the queue is empty (no solution).
+5.  **Reconstruct**: Once the exit is found, follow the "parent" references back to the entry to highlight the final path.
+
+---
+
+### 5. Why BFS for Solving?
+We chose BFS over other algorithms (like DFS) for two main reasons:
+
+* **Shortest Path Guarantee**: BFS is mathematically guaranteed to find the shortest path between two points in an unweighted grid. This is essential for non-perfect mazes where multiple routes exist.
+* **Efficiency**: While DFS might find *a* path faster in some cases, it often finds a very long and inefficient one. BFS ensures the solution we display is always the most optimal.
 
 ## V. Reusability
 
 ## VI. Project Management
 
-### 1. Team Roles
+### 1. Detailed Team Roles & Task Distribution
+
+| Domain | Task / Sub-task | Primary Owner | Key Deliverables |
+| :--- | :--- | :--- | :--- |
+| **Architecture** | **OOP Class Design** | marberge | Core Architectural Design: Defined the entire hierarchy, responsibilities, and method signatures. This foundational work ensured modularity and seamless integration between the generator and solver. |
+| | **Dual-Project Structure** | stmaire | Managed the bridge between the 42 submission script and the reusable `mazegen` package. |
+| **DevOps** | **Makefile Automation** | stmaire | Created the local build system (install, run, test, lint, clean) for easy development. |
+| | **GitHub Actions CI** | marberge | Configured the automated cloud pipeline for testing and linting on every push/PR. |
+| **Generation** | **DFS Algorithm** | stmaire | Implemented the Recursive Backtracking logic for the maze generation engine. |
+| | **Cell Data Structure** | marberge | Designed the core `MazeGenerator`,`Cell` and `Grid` objects to store wall states and visit history. |
+| | **Imperfection Logic** | stmaire | Added the post-processing pass to remove walls based on the `IMPERFECTION_RATE`. |
+| **Solving** | **BFS Solver** | stmaire | Developed the Breadth-First Search algorithm to guarantee the shortest path solution. |
+| | **Pathfinding Logic** | stmaire | Handled queue management and parent-tracking to reconstruct the final path. |
+| **Data Handling** | **Pydantic Parsing** | stmaire | Implemented strict validation and type enforcement for the `config.txt` file. |
+| | **Hexadecimal System** | marberge | Developed the output system to convert the solution path into the required hex format. |
+| **Interface** | **ASCII Rendering** | marberge | Built the visual engine to display the maze and its solution directly in the terminal. |
+| | **File Management** | marberge | Managed the reading/writing logic for `.txt` output file. |
+| **Quality** | **Unit Testing** | marberge | Wrote the `pytest` suite for core logic, edge cases, and coordinate validation. |
+| | **Type Safety** | stmaire | Enforced strict typing across the project using `mypy` and Python type hints. |
+| **Docs** |  **Internal Package README** | stmaire |Authored the developer-focused README within the `src/mazegen/` directory. |
+| | **Global Documentation** | marberge & stmaire | Authored the internal docstrings and this comprehensive external `README.md`. |
+
+---
 
 ### 2. Planning & Evolution
 
+Our project was managed as a **50-hour intensive development cycle**, executed over **10 days** by a team of two. 
+
+* **Primary Objective**: Strict adherence to deadlines while maintaining professional software engineering standards.
+* **Initial Phase (Architecture & Design)**: We dedicated the first half of the project to a deep reflection on the global architecture. Our priority was to define clean, professional code structures and clear class responsibilities before writing a single line of logic.
+* **Quality-First Approach**: Before implementing the generation and solving algorithms, we established our testing environment and method signatures to ensure a "Correct by Design" development process.
+* **Development & Adaptation**: The coding phase followed this architectural blueprint. Evolution throughout the 10 days was limited to minor adaptations to solve specific technical hurdles, as the initial design proved robust.
+* **Core Philosophy**: Every decision was guided by two principles: **Class Cohesion** (ensuring each object has one clear job) and **Package Reusability** (making the `mazegen` library easy to integrate into future projects).
+---
+
 ### 3. Retrospective
 
+* **What worked well**:
+    * **Team Synergy**: Constant communication and collaborative decision-making allowed us to maintain a steady pace and solve technical roadblocks quickly.
+    * **Architecture Robustness**: Our initial "Design First" approach paid off. The **Cell Data Structure** was so stable it supported both the **Iterative DFS** generator and **BFS** solver with zero modifications.
+    * **Algorithmic Scalability**: By choosing an **Iterative DFS** (using an explicit stack) instead of a recursive one, we ensured the generator could handle massive grids without being limited by Python's recursion depth.
+    * **Professional Output**: The final result is a clean, tested, and reusable package that meets professional software standards.
+
+* **What could be improved**:
+    * **Terminal Dimensions**: While the ASCII rendering is clear, it is naturally constrained by terminal window sizes, which limits the visual impact when displaying very large, high-scale mazes.
+    * **Feature Prioritization**: Due to our strict 10-day deadline, we intentionally chose **"Quality over Quantity"**. We prioritized a rock-solid, scalable core (Iterative DFS + BFS) over adding secondary features like a GUI or extra generation algorithms.
+
+---
 ### 4. Tools Used
+* **Language**: Python 3.10+
+* **Data Validation**: **Pydantic v2** (Model-based parsing).
+* **Environment**: `venv` for dependency isolation.
+* **Automation**: `Makefile` for one-command install, run, and lint.
+* **Code Quality**: `flake8` (linting), `mypy` (type checking), `pdb` (debugging).
+* **Testing**: `pytest` for unit tests and edge cases.
+* **Version Control**: Git, with a strict `.gitignore` to keep the repository clean of `__pycache__` and build artifacts.
+
 
 ## VII. Resources
 
