@@ -1,10 +1,24 @@
 *This project has been created as part of the 42 curriculum by marberge, stmaire.*
 
+<div align="center">
+<br>
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQPzuYKu7n0cWUYa5Kbg0_LrlEQAIURWeo9A&s" alt="42 Logo" width="400" />
+
+  <br>
+</div>
+
 # A-Maze-ing 
 
 ## I. Description
 
 **A-Maze-ing** is a comprehensive Python package dedicated to the generation and resolution of two-dimensional mazes. Developed as part of the 42 curriculum, this project implements fundamental graph theory algorithms to transform a blank grid into a complex, structured puzzle.
+
+<div align="center">
+<br>
+  <img src="assets/amazing_picture.png" alt="Animation BFS" width="500" />
+
+  <br>
+</div>
 
 ### Project Goals
 
@@ -129,6 +143,58 @@ rm -f mazegen-1.0.0-py3-none-any.whl
 
 ## III. Usage & Features
 
+The **A-Maze-ing** project is strictly divided into two distinct parts: a standalone, reusable core library (`mazegen`) and an interactive Command Line Interface (CLI) application that utilizes this library.
+
+### 1. Project Architecture
+
+Below is the tree structure of the main components of the repository:
+
+	.
+	├── a_maze_ing.py
+	├── app/
+	│   ├── display.py
+	│   ├── __init__.py
+	│   └── parser.py
+	├── config.txt
+	├── src/
+	│   └── mazegen/
+	│       ├── cell.py
+	│       ├── exporter.py
+	│       ├── maze_builder.py
+	│       ├── maze_generator.py
+	│       └── solver.py
+	└── tests/
+	    └── test_parser.py
+
+### 2. Component Overview
+
+#### The Core Library (`src/mazegen/`)
+This module contains the pure algorithmic heart of the project. It is designed to be completely decoupled from the UI, making it fully reusable for future projects (like a Pac-Man game). It operates silently without standard output.
+* **`cell.py`**: The fundamental data structure representing a single grid unit, managing its coordinates, wall states (N, S, E, W), and pathfinding metadata.
+* **`maze_builder.py` & `maze_generator.py`**: The orchestrators responsible for carving the maze using the Recursive Backtracking algorithm and handling the "42" pattern integration.
+* **`solver.py`**: Implements a Breadth-First Search (BFS) algorithm to compute the shortest guaranteed path from the entry to the exit point.
+* **`exporter.py`**: Translates the mathematical grid into the required hexadecimal output format and writes the solution file.
+
+#### The CLI Application (`app/` & `a_maze_ing.py`)
+This is the interactive wrapper built around the core library. 
+* **`a_maze_ing.py`**: The main entry point that ties the configuration, the generation engine, and the display together.
+* **`parser.py`**: A robust configuration file parser that extracts, validates, and types the data from `config.txt` before feeding it to the generator.
+* **`display.py`**: The visual engine of the application.
+
+#### Reliability (`tests/`)
+A dedicated test suite using `pytest` to automatically verify the integrity of the parsing logic and the mathematical correctness of the generated mazes (dimensions, perfect/imperfect states).
+
+### 3. Advanced UI Features
+
+To provide the best User Experience (UX) possible, the project features an advanced Text User Interface (TUI) powered by the Python `curses` library. 
+
+When running the project, the maze is rendered in a dedicated Alternate Screen Buffer with the following interactive features:
+* **Extended Grid Rendering**: The maze is displayed using an expanded pixel-like ASCII approach, ensuring perfectly proportioned walls and corridors.
+* **Real-time Regeneration**: Pressing a dedicated key dynamically generates a brand-new maze based on a new seed and redraws it instantly without restarting the script.
+* **Interactive Pathfinding Toggle**: The BFS solution path (rendered as a continuous, flowing line connecting the Entry and Exit points) can be shown or hidden on the fly.
+* **Dynamic Color Switching**: Users can cycle through a curated palette of xterm-256color hex values for the maze walls to customize the display.
+* **Responsive Design**: The interface constantly listens for OS-level terminal resize events. If the window becomes too small to display the maze, it safely hides the grid and prompts the user to enlarge the window, preventing visual glitches.
+
 ## IV. Technical Choices
 
 ### 1. Configuration File Structure
@@ -158,7 +224,13 @@ IMPERFECTION_RATE=0.2
 ### 2. Maze Generation Algorithm: Iterative Backtracking
 We implemented **Iterative Backtracking**, which is based on a **Depth-First Search (DFS)** approach using an **explicit stack**.
 
-![Maze Generation Animation](animations/dfs_generation.gif)
+<div align="center">
+<br>
+  <img src="assets/dfs_generation.gif" alt="Maze animation DFS" width="300" />
+
+  <br>
+</div>
+
 
 #### How it works:
 * **Start**: Pick a starting cell, mark it as "visited", and push it into a **stack**.
@@ -177,7 +249,13 @@ We selected **Iterative Backtracking** for three specific reasons:
 ### 4. Maze Solving Algorithm: Breadth-First Search (BFS)
 To find the exit, we implemented the **Breadth-First Search (BFS)** algorithm. This approach explores the maze layer by layer, starting from the entry point.
 
-![Maze Generation Animation](animations/bfs.gif)
+<div align="center">
+<br>
+  <img src="assets/bfs.gif" alt="Animation BFS" width="300" />
+
+  <br>
+</div>
+
 
 #### How it works:
 1.  **Initialize**: Place the `ENTRY` coordinates into a **Queue** and mark the cell as visited.
@@ -198,6 +276,10 @@ We chose BFS over other algorithms (like DFS) for two main reasons:
 * **Efficiency**: While DFS might find *a* path faster in some cases, it often finds a very long and inefficient one. BFS ensures the solution we display is always the most optimal.
 
 ## V. Reusability
+
+The core of this project has been thinked and made to be reused. The construction of the maze, the solver and the exporter are all included in the `mazegen` module. Code left inside app directory is just here to parse the config file and display the maze.
+
+You can find the documentation on `mazegen` module [here](src/mazegen/README.md).
 
 ## VI. Project Management
 
@@ -268,3 +350,4 @@ Our project was managed as a **50-hour intensive development cycle**, executed o
     * **Maze Solving (BFS)**: Inspired by the Breadth-First Search visualization from the Wikimedia Commons algorithm collection, licensed under [Public Domain](https://creativecommons.org/publicdomain/zero/1.0/).
 
 ### 2. AI Usage Disclosure
+
