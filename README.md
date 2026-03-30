@@ -132,10 +132,46 @@ rm -f mazegen-1.0.0-py3-none-any.whl
 ## IV. Technical Choices
 
 ### 1. Configuration File Structure
+The generator is driven by a `config.txt` file, allowing parameters to be adjusted without modifying the source code. The file follows a clear `KEY=VALUE` format:
 
-### 2. Maze Generation Algorithm
+```ini
+# Maze Configuration
+WIDTH=20
+HEIGHT=15
+ENTRY=0,0
+EXIT=19,14
+OUTPUT_FILE=maze.txt
+PERFECT=False
+SEED=42
+IMPERFECTION_RATE=0.2
+```
+
+| Parameter | Description |
+| :--- | :--- |
+| **WIDTH / HEIGHT** | Grid dimensions (minimum **2x2**). |
+| **ENTRY / EXIT** | Starting and ending coordinates in `x,y` format (e.g., `0,0`). |
+| **OUTPUT_FILE** | The filename where the generated maze will be saved (e.g., `.txt` or `.map`). |
+| **PERFECT** | `True`: Exactly one path (no loops). `False`: Allows multiple paths and cycles. |
+| **SEED** | (Optional) A value to initialize the random generator for reproducible mazes. |
+| **IMPERFECTION_RATE** | Used only if `PERFECT=False`. A float (**0.0 to 1.0**) representing the percentage of additional walls to remove to create loops. |
+
+### 2. Maze Generation Algorithm: Recursive Backtracking
+We implemented **Recursive Backtracking**, which is based on a **Depth-First Search (DFS)** approach.
+
+
+
+#### How it works:
+* **Start**: Pick a starting cell and mark it as "visited".
+* **Move**: Randomly select an unvisited neighbor, "break" the wall between the two cells, and move to that neighbor.
+* **Backtrack**: If a cell has no unvisited neighbors (a dead-end), the algorithm goes back to the previous cell and repeats the process until every cell in the grid has been visited.
+* **Imperfection Pass**: If `PERFECT` is set to `False`, the builder performs an extra step to remove a specific percentage of remaining walls, creating shortcuts and cycles.
 
 ### 3. Why this Algorithm?
+We selected **Recursive Backtracking** for three specific reasons:
+
+* **High-Quality Mazes**: Unlike other methods (like Prim’s), it creates mazes with **long, winding corridors** and fewer intersections. This makes the maze more challenging to solve and more visually interesting.
+* **Perfect Logic**: It naturally guarantees a **"perfect" maze** where every cell is reachable and there are no isolated areas. This provides a solid base before we manually add loops for the "non-perfect" mode.
+* **Easy Implementation**: The algorithm's need to track "visited" cells and "walls" matches our **`Cell` object** perfectly. Each cell carries its own data, making the generator's movement through the grid simple to code and debug.
 
 ## V. Reusability
 
