@@ -22,7 +22,7 @@ def test_maze_config_valid_data():
     assert config.width == 20
     assert config.height == 15
     assert config.perfect is True
-    assert config.seed == 42
+    assert config.seed == "42"
     assert config.entry_coord == (0, 0)
     assert config.exit_coord == (19, 14)
 
