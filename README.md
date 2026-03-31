@@ -348,9 +348,22 @@ We created a backlog on **Trello** to divide the tasks into tickets.
 
 ### 1. References
 
+* **Algorithm Specifications (Wikipedia)**:
+    * [Maze Generation Algorithms](https://en.wikipedia.org/wiki/Maze_generation_algorithm): Overview of various construction methods.
+    * [Depth-First Search (DFS)](https://en.wikipedia.org/wiki/Depth-first_search): Theory behind the backtracking exploration.
+    * [Breadth-First Search (BFS)](https://en.wikipedia.org/wiki/Breadth-first_search): Logic for finding the shortest path in unweighted graphs.
+* **Technical Documentation**:
+    * [Python `curses` module](https://docs.python.org/3/library/curses.html): Official documentation for terminal-based screen handling and optimization.
+    * [Pydantic v2](https://docs.pydantic.dev/latest/): Models and validation patterns for configuration management.
 * **Visual Assets**:
-    * **Maze Generation (DFS)**: Based on the "Recursive Backtracking" animation by [Dshook](https://commons.wikimedia.org/wiki/User:Dshook), licensed under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
-    * **Maze Solving (BFS)**: Inspired by the Breadth-First Search visualization from the Wikimedia Commons algorithm collection, licensed under [Public Domain](https://creativecommons.org/publicdomain/zero/1.0/).
+    * **Maze Generation Animation**: Created by [Dshook](https://commons.wikimedia.org/wiki/File:Maze_Generation_Animation.gif), licensed under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). 
+    * **Maze Solving Animation**: Based on the BFS expansion visualization from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Maze_solve_bfs.gif), licensed under Public Domain.
 
 ### 2. AI Usage Disclosure
 
+This project was developed with the assistance of **AI (Gemini)** acting as a peer-review and documentation partner. AI was specifically leveraged for:
+
+* **Problem Analysis**: Assisting in the initial breakdown of project requirements
+* **Algorithm Design**: Clarifying Graph Theory concepts.
+* **Technical Writing**: Drafting and refining the **professional English documentation** to meet industry standards.
+* **Quality Assurance**: Identifying **edge cases** (e.g., 2x2 grids, invalid coordinates) and generating comprehensive `pytest` suites to ensure system robustness.

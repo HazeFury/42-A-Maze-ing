@@ -17,9 +17,7 @@ class MazeGenerator:
             perfect: bool,
             seed: int | None = None,
             ) -> None:
-        """
-        Initialize the maze generator with dimensions and randomness settings.
-        """
+        """Initialize the generator with dimensions and randomness settings."""
         if (not isinstance(width, int) or
             not isinstance(height, int) or
                 width < 2 or height < 2):
@@ -29,10 +27,9 @@ class MazeGenerator:
             raise TypeError("The 'perfect' parameter must be a boolean.")
 
         if seed is not None:
-            if not isinstance(seed, int) or seed < 0:
-                raise ValueError(
-                    "The 'seed' parameter must be a positive integer."
-                    )
+            if not isinstance(seed, (int, float, str)):
+                raise TypeError("The 'seed' parameter "
+                                "must be an integer, float, or string.")
 
         self.width = width
         self.height = height
