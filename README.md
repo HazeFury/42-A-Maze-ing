@@ -309,7 +309,10 @@ You can find the documentation on `mazegen` module [here](src/mazegen/README.md)
 
 ### 2. Planning & Evolution
 
+
 Our project was managed as a **50-hour intensive development cycle**, executed over **10 days** by a team of two. 
+
+We created a backlog on **Trello** to divide the tasks into tickets.
 
 * **Primary Objective**: Strict adherence to deadlines while maintaining professional software engineering standards.
 * **Initial Phase (Architecture & Design)**: We dedicated the first half of the project to a deep reflection on the global architecture. Our priority was to define clean, professional code structures and clear class responsibilities before writing a single line of logic.

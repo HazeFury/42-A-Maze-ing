@@ -19,11 +19,11 @@ class MazeConfig(BaseModel):
         output_file (str): Path to the output file.
         perfect (bool): Whether the maze is perfect (one unique path).
         seed (int | None): Seed for reproducibility.
-        imperfection_rate (float | None): Rate of the maze imperfection (between 0 and 1)
+        imperfection_rate (float | None): Rate of the maze imperfection
+        (between 0 and 1)
     """
-    # Interdit les clés non définies dans le modèle (ex: faute d'orthographe)
-    # popultate_by_name=True permet d'utiliser les alias (ex: WIDTH)
-    # pour créer les attributs (ex: width)
+    # extra="forbid" => Throw error if any other key is provided in config file
+    # popultate_by_name=True => allow use of alias (ex: WIDTH)
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     width: int = Field(alias="WIDTH", ge=2, le=100)

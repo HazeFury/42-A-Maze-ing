@@ -52,52 +52,48 @@ class MazeDisplay:
         curses.init_pair(11, 244, curses.COLOR_BLACK)
 
     def _draw_maze(self, stdscr: curses.window, is_showing_path: bool) -> None:
-        """
-        Dessine le labyrinthe en utilisant le concept de Grille Étendue.
-        """
+        """Renders the maze grid onto the extended ASCII screen."""
 
         curr_maze_color_id = self.wall_colors[self.current_wall_color_idx]
         entry_x, entry_y = self.entry_coord
         exit_x, exit_y = self.exit_coord
-        # On parcourt la grille mathématique
+
         for y in range(self.maze.height):
             for x in range(self.maze.width):
                 cell = self.maze.get_cell(x, y)
+
                 if not cell:
                     continue
 
-                # 1. Calcul des coordonnées sur l'écran (Grille étendue)
-                # On multiplie par 2 l'axe X car un caractère ASCII est plus haut que large
-                # Utiliser 2 caractères (ex: "██") rend le labyrinthe carré visuellement !
                 screen_y = (y * 2) + 1
-                screen_x = (x * 2) * 2 + 2  # *2 pour l'étendue, *2 pour la largeur du "██"
+                screen_x = (x * 2) * 2 + 2
 
                 try:
-                    # --- 1. DÉTERMINATION DU CENTRE (Couleur et Caractère) ---
+                    # --- CHOOSE CENTER COLOR & CHARACTER ---
                     color = curses.color_pair(6)
-                    char_to_draw = self.PATH_CHAR  # Par défaut : vide
+                    char_to_draw = self.PATH_CHAR
 
                     if cell.is_part_of_42:
                         color = curses.color_pair(2)
                         char_to_draw = self.P42_CHAR
+
                     elif cell.x == entry_x and cell.y == entry_y:
-                        # L'entrée gagne toujours !
                         color = curses.color_pair(4)
                         char_to_draw = self.SOL_CHAR
+
                     elif cell.x == exit_x and cell.y == exit_y:
-                        # La sortie gagne toujours !
                         color = curses.color_pair(5)
                         char_to_draw = self.SOL_CHAR
+
                     elif cell.is_solution and is_showing_path:
-                        # Le chemin standard (uniquement si activé)
                         color = curses.color_pair(3)
                         char_to_draw = self.SOL_CHAR
 
-                    # On dessine le centre !
+                    # function to draw a character on screen :
+                    # stdscr.addstr(y, x, texte, options)
                     stdscr.addstr(screen_y, screen_x, char_to_draw, color)
 
-                    # --- 2. DESSIN DES PONTS CONTINUS ---
-                    # On ne les dessine QUE si on affiche le chemin
+                    # --- DRAW PATH JUNCTIONS ---
                     if cell.is_solution and is_showing_path:
                         solution_color = curses.color_pair(3)
 
@@ -114,42 +110,53 @@ class MazeDisplay:
                             stdscr.addstr(screen_y, screen_x + 2,
                                           self.SOL_CHAR, solution_color)
 
-                    # 3. Dessin des murs (On dessine les murs autour du centre)
-                    # Si le mur Nord existe, on met un bloc au-dessus
+                    wall_color = curses.color_pair(curr_maze_color_id)
+
+                    # --- DRAW WALLS ---
                     if cell.walls["N"]:
                         stdscr.addstr(screen_y - 1, screen_x, self.WALL_CHAR,
-                                      curses.color_pair(curr_maze_color_id))
+                                      wall_color)
 
-                    # Si le mur Sud existe, on met un bloc en-dessous
                     if cell.walls["S"]:
                         stdscr.addstr(screen_y + 1, screen_x, self.WALL_CHAR,
-                                      curses.color_pair(curr_maze_color_id))
+                                      wall_color)
 
-                    # Mur Ouest (à gauche)
                     if cell.walls["W"]:
                         stdscr.addstr(screen_y, screen_x - 2, self.WALL_CHAR,
-                                      curses.color_pair(curr_maze_color_id))
+                                      wall_color)
 
-                    # Mur Est (à droite)
                     if cell.walls["E"]:
                         stdscr.addstr(screen_y, screen_x + 2, self.WALL_CHAR,
-                                      curses.color_pair(curr_maze_color_id))
+                                      wall_color)
 
-                    # Les coins (toujours des murs pour que visuellement ce soit fermé)
-                    stdscr.addstr(screen_y - 1, screen_x - 2, self.WALL_CHAR,
-                                  curses.color_pair(curr_maze_color_id))  # Nord-Ouest
-                    stdscr.addstr(screen_y - 1, screen_x + 2, self.WALL_CHAR,
-                                  curses.color_pair(curr_maze_color_id))  # Nord-Est
-                    stdscr.addstr(screen_y + 1, screen_x - 2, self.WALL_CHAR,
-                                  curses.color_pair(curr_maze_color_id))  # Sud-Ouest
-                    stdscr.addstr(screen_y + 1, screen_x + 2, self.WALL_CHAR,
-                                  curses.color_pair(curr_maze_color_id))  # Sud-Est
+                    # --- DRAW WALLS CORNERS ---
+                    if cell.walls["N"] or cell.walls["W"]:
+                        stdscr.addstr(
+                            screen_y - 1, screen_x - 2, self.WALL_CHAR,
+                            wall_color)
+
+                    if cell.walls["N"] or cell.walls["E"]:
+                        stdscr.addstr(
+                            screen_y - 1, screen_x + 2, self.WALL_CHAR,
+                            wall_color)
+
+                    if cell.walls["S"] or cell.walls["W"]:
+                        stdscr.addstr(
+                            screen_y + 1, screen_x - 2, self.WALL_CHAR,
+                            wall_color)
+
+                    if cell.walls["S"] or cell.walls["E"]:
+                        stdscr.addstr(
+                            screen_y + 1, screen_x + 2, self.WALL_CHAR,
+                            wall_color)
 
                 except curses.error:
-                    # Ignore les erreurs si on essaie de dessiner en dehors du terminal
                     pass
 
     def _draw_loop(self, stdscr: curses.window) -> None:
+        """
+        Executes the main event loop for the interactive curses interface.
+        """
         curses.curs_set(0)
         self._init_colors()
         is_showing_path: bool = True
@@ -159,21 +166,15 @@ class MazeDisplay:
         cause_42_msg: str = "(entry or exit point is in the '42' pattern)"
         too_small_for_42: str = "WARNING: Maze too small for '42' pattern"
 
-        # On calcule la taille "physique" dont notre labyrinthe a besoin sur l'écran
-        # Axe Y : (hauteur * 2) + 1 (pour les murs) + 2 (pour la marge et la barre d'infos)
         required_y = (self.maze.height * 2) + margin
-
-        # Axe X : (largeur * 4) + 2 (pour les murs) + 2 (marge)
-        # On multiplie par 4 car chaque cellule fait 2 caractères de large + l'espacement
         required_x = (self.maze.width * 4) + margin
 
-        #  La Boucle d'Événements (écoute le clavier et les évènement de resize en temps réel)
+        #  === START DISPLAY ===
         while True:
-            stdscr.clear()  # Nettoie l'écran alternatif
-            # On demande à curses la taille actuelle de la fenêtre à chaque tour de boucle
+            stdscr.clear()
+            # get the size of the current screen
             max_y, max_x = stdscr.getmaxyx()
 
-            # LE VIDEUR DU BOÎTE DE NUIT (Le check de taille)
             if max_y < required_y or max_x < required_x:
                 warning: list[str] = [
                     " ⚠️  ",
@@ -182,7 +183,8 @@ class MazeDisplay:
                     " Press 'q' or '4' to quit "
                     ]
 
-                # On centre les messages de warning
+                # display warning messages on the center of the screen
+                # if size is too small
                 try:
                     start_y = (max_y - len(warning)) // 2
                     for i, line in enumerate(warning):
@@ -193,7 +195,7 @@ class MazeDisplay:
                                     " enlarge the window to launch display")
 
             else:
-                # La fenêtre est assez grande, on dessine la merveille !
+                # else, we draw the maze
                 self._draw_maze(stdscr, is_showing_path)
 
                 if not self.maze._has_been_generated:
@@ -205,7 +207,7 @@ class MazeDisplay:
                         if self.maze._has_been_generated else no_solv_base
                     stdscr.addstr(max_y - 8, 2, no_solv_msg,
                                   curses.color_pair(1))
-                
+
                 if self.maze.width < 9 or self.maze.height < 7:
                     stdscr.addstr(max_y - 10, 2, too_small_for_42,
                                   curses.color_pair(1))
@@ -221,37 +223,29 @@ class MazeDisplay:
                     for i, line in enumerate(instructions):
                         stdscr.addstr(max_y - ((len(instructions) + 1) - i), 2,
                                       line, curses.A_REVERSE)
-                        # curses.A_REVERSE inverse les couleurs (texte noir sur fond blanc) pour faire un beau menu !
-                        # Affichage du texte (stdscr.addstr(y, x, texte))
                 except curses.error:
                     pass
 
-            #  On rafraîchit l'écran pour appliquer les modifications visuelles
             stdscr.refresh()
 
-            # On attend une action.
-            # Astuce: si l'utilisateur redimensionne la fenêtre, curses génère une touche spéciale (curses.KEY_RESIZE)
+            # start listening key's event (screen resize is also an event)
             key = stdscr.getch()
 
             if key == ord('4') or key == ord('q'):
-                break  # On sort de la boucle, le wrapper va fermer l'écran proprement
+                break
             if key == ord('2'):
                 is_showing_path = not is_showing_path
             if key == ord('3'):
                 self.current_wall_color_idx = (
                     (self.current_wall_color_idx + 1) % len(self.wall_colors)
                 )
+
             elif key == ord('1'):
-                # On regénère
                 self.maze.replace_seed()
                 self.maze.reset_grid()
                 self.maze.generate_maze()
                 self.maze.solve_path(self.entry_coord, self.exit_coord)
-            # Si la touche est curses.KEY_RESIZE, la boucle recommence toute seule,
-            # recalcule max_y/max_x, et affiche le labyrinthe si c'est devenu assez grand !
 
     def start(self) -> None:
-        """
-        Point d'entrée sécurisé. Le wrapper gère l'écran alternatif et les crashs.
-        """
+        """Secure entry point to launch the interactive display."""
         curses.wrapper(self._draw_loop)

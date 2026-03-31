@@ -17,7 +17,9 @@ class MazeGenerator:
             perfect: bool,
             seed: int | None = None,
             ) -> None:
-        """Initialize the maze generator with dimensions and randomness settings."""
+        """
+        Initialize the maze generator with dimensions and randomness settings.
+        """
         if (not isinstance(width, int) or
             not isinstance(height, int) or
                 width < 2 or height < 2):
@@ -28,20 +30,17 @@ class MazeGenerator:
 
         if seed is not None:
             if not isinstance(seed, int) or seed < 0:
-                raise ValueError("The 'seed' parameter must be a positive integer.")
+                raise ValueError(
+                    "The 'seed' parameter must be a positive integer."
+                    )
 
         self.width = width
         self.height = height
         self.perfect = perfect
-        self.rng = random.Random(seed)  # générateur de hasard isolé et sécurisé !
+        self.rng = random.Random(seed)
 
-        # L'Hybride : Une matrice 2D remplie d'objets (Nœuds)
         self.grid = [[Cell(x, y) for x in range(width)] for y in range(height)]
-        # attribut qui passera à `true` quand le maze aura été généré. Permettra de vérifier que
-        # le maze existe avant d'appeler le solver pour éviter le crash.
         self._has_been_generated: bool = False
-        # attribut qui passera à `true` quand une solution aur été toruvée. Permettra de vérifier que
-        # la solution existe avant d'essayer de l'exporter.
         self._has_been_solved: bool = False
 
     def replace_seed(self, new_seed: int | float | str | None = None) -> None:
@@ -57,7 +56,6 @@ class MazeGenerator:
                             " a string or None.")
 
         self.rng = random.Random(new_seed)
-        # si le paramètre est None, on se base sur l'heure pour le random
 
     def get_cell(self, x: int, y: int) -> Cell | None:
         """
@@ -120,21 +118,16 @@ class MazeGenerator:
                                  " a float.\nValue must be : "
                                  "0.0 > imperfection_rate < 1.0.")
 
-        # 1. On applique le motif 42 (qui mettra certaines cases en visited=True et is_part_of_42=True)
         self._apply_42_pattern()
 
-        # 2. On instancie notre algorithme (la stratégie)
         builder = MazeBuilder(
             self.grid, self.width, self.height, self.rng
             )
 
-        # 3. L'algorithme fait son job directement sur notre matrice en mémoire !
         builder.generate()
 
-        # (Optionnel) Si PERFECT=False, c'est ici qu'on viendrait
-        # casser quelques murs supplémentaires pour créer des boucles.
         if not self.perfect:
-            # On définit ici combien de murs on veut casser (ex: 10 de la grille)
+            # Imperfection rate define the number of the wall to break down.
             rate = imperfection_rate if imperfection_rate is not None else 0.1
             nb_to_break = int((self.width * self.height) * rate)
             builder.degrade_perfection(nb_to_break)
@@ -155,11 +148,9 @@ class MazeGenerator:
             ValueError: If coordinates are out of grid bounds.
             RuntimeError: If the maze has not been generated yet.
         """
-        # vérifie que entry et exit sont bien dans les limites du maze
         if not self.get_cell(*entry_coord) or not self.get_cell(*exit_coord):
             raise ValueError("Invalid entry or exit.")
 
-        # vérifie que le maze a été instancié avant qu on appelle le solver:
         if not getattr(self, "_has_been_generated", False):
             raise RuntimeError("You must generate maze before calling solver.")
 

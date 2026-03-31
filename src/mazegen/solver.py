@@ -26,8 +26,6 @@ class Solver:
         self.height = height
         self.entry_x, self.entry_y = entry_coord
         self.exit_x, self.exit_y = exit_coord
-
-        # C'est ici qu'on stockera le résultat une fois le chemin trouvé
         self.path: list[Cell] = []
 
     def _get_cell(self, x: int, y: int) -> Cell | None:
@@ -46,32 +44,14 @@ class Solver:
 
         Return True if a path is found and reconstructed, False otherwise.
         """
-        # récupère les coord de l'entrée et de la sortie du labyrinthe,
-        # en vérifiant qu'elle sont bien
-        # à l'intérieur de la grille
         start_node = self._get_cell(self.entry_x, self.entry_y)
         exit_node = self._get_cell(self.exit_x, self.exit_y)
-        # sécurité : s'il manque une coord ou si l'un des deux points
-        # est à l'extérieur de la grille
+
         if not start_node or not exit_node:
             return False
 
         queue = deque([start_node])
-        # à la différence d'une liste, avec une Double Ended Queue,
-        # tu peux ajouter ou retirer facilement
-        # des éléments à la fin mais aussi au début :
-        # Action    À Droite (Fin)  À Gauche (Début)
-        # Ajouter   d.append(x)     d.appendleft(x)
-        # Retirer   d.pop()         d.popleft()
 
-        # création d'un dictionnaire qui donne:
-        # pour chaque cellule (enfant) = clé
-        # la cellule d'où il vient(parent) = valeur
-        # permet de reconstruire ensuite le chemin
-        # permet d'éviter les boucles(on regarde
-        # si une cellule est déjà dans le dico
-        # avant de l'envoyer dans la queue
-        # si oui c'est que la cellule a déjà été visitée)
         child_from: dict[Cell, Cell | None] = {}
         child_from[start_node] = None
 
@@ -129,18 +109,16 @@ class Solver:
 
             parent_node = child_from[current_node]
             if parent_node:
-                # On calcule la direction de connexion (N, S, E, W)
+
                 if current_node.x == parent_node.x:
-                    # Connexion verticale
+
                     if current_node.y > parent_node.y:
-                        # On va du Sud vers le Nord
                         current_node.path_connections["N"] = True
                         parent_node.path_connections["S"] = True
                     else:
                         current_node.path_connections["S"] = True
                         parent_node.path_connections["N"] = True
                 else:
-                    # Connexion horizontale
                     if current_node.x > parent_node.x:
                         current_node.path_connections["W"] = True
                         parent_node.path_connections["E"] = True
@@ -149,6 +127,5 @@ class Solver:
                         parent_node.path_connections["W"] = True
 
             current_node = parent_node
-        # liste[start:stop:step]donc ici pas de début, pas de fin :
-        # on prend toute la liste et on la retourne avec le step = -1
+
         self.path = path[::-1]
