@@ -1,41 +1,58 @@
 class Cell:
-    def __init__(self, x: int, y: int):
+    """Represents a single unit in the maze grid.
+
+    Tracks the cell's coordinates, wall states, and pathfinding metadata.
+    """
+    def __init__(self, x: int, y: int) -> None:
+        """Initializes a new Cell with all walls closed.
+
+        Args:
+            x (int): The x-coordinate (column) of the cell.
+            y (int): The y-coordinate (row) of the cell.
+        """
         self.x = x
         self.y = y
         self.visited = False
-        self.is_part_of_42 = False  # Passe a True dans la fonction qui ajoute le 42 pattern dans le maze -> servira à gérer le la couleur lors de l'affichage
-        self.is_solution = False  # Passe à true dans le solver du chemin et permettra de gérer l'affichage plus facilement à après
+        self.is_part_of_42 = False
+        self.is_solution = False
         self.walls = {"N": True, "E": True, "S": True, "W": True}
-        # Le Graphe : Les murs représentent l'absence d'arête (pas de chemin).
-        # Au début, la cellule est un bloc solide, entourée de 4 murs.
-        # --- NOUVEAU DRAPEAU LOGIQUE ---
-        self.path_connections = {"N": False, "E": False, "S": False, "W": False}
-        # Stocke les directions des connexions du chemin de la solution.
-        # N=North, E=East, S=South, W=West. Par défaut, aucune connexion.
+        self.path_connections = {
+            "N": False, "E": False, "S": False, "W": False
+            }
 
     def break_wall(self, direction: str) -> None:
-        """Casser un mur revient à créer une arête dans notre graphe."""
+        """Removes the wall in the specified direction.
+
+        Args:
+            direction (str): The cardinal direction ('N', 'S', 'E', or 'W').
+        """
         self.walls[direction] = False
 
     def repair_wall(self, direction: str) -> None:
-        """Remet un mur (ferme l'arête du graphe)."""
+        """Restores the wall in the specified direction.
+
+        Args:
+            direction (str): The cardinal direction ('N', 'S', 'E', or 'W').
+        """
         self.walls[direction] = True
 
     def get_hex_value(self) -> str:
+        """Computes the hexadecimal value of the cell's walls.
+
+        Calculates the value based on bitwise flags: North=1, East=2,
+        South=4, West=8. A closed wall adds to the total value.
+
+        Returns:
+            str: A single uppercase hexadecimal character (e.g., 'F').
         """
-        Traduit l'état de la cellule pour le fichier de sortie.
-        """
-        # Le sujet impose : Bit 0=North, 1=East, 2=South, 3=West[cite: 148].
-        # Un mur fermé met le bit à 1[cite: 151].
         val = 0
         if self.walls["N"]:
-            val += 1  # 2^0
+            val += 1
         if self.walls["E"]:
-            val += 2  # 2^1
+            val += 2
         if self.walls["S"]:
-            val += 4  # 2^2
+            val += 4
         if self.walls["W"]:
-            val += 8  # 2^3
+            val += 8
 
-        # Convertit l'entier en hexadécimal (ex: 15 -> 'F')
         return hex(val)[2:].upper()

@@ -58,7 +58,6 @@ class Exporter:
             self.exit_coord
             )
         solver.solve()
-        # TODO: Est-ce que Steph est ok avec cette approche ?
         if not solver.path or len(solver.path) < 2:
             raise Exception("No solution on the current maze.\n"
                             "Consider checking the following steps :\n"
@@ -101,7 +100,6 @@ class Exporter:
         Raises:
             Exception: If an error occurs during file opening or writing.
         """
-        # TODO: Est-ce que Steph est ok avec cette approche ?
         if not has_been_generated:
             raise Exception("Unauthorized action : You cannot export a maze"
                             " not generated yet.\nCurrently, there is just a"
