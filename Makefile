@@ -15,15 +15,17 @@ all: install
 
 install: $(VENV)
 	@$(PIP) install --upgrade pip
-	@$(PIP) install build
 	@$(PIP) install -e ".[dev]"
-	@$(PYTHON) -m build
-	@cp dist/$(WHL) .
 
 $(VENV):
 	@python3 -c "import sys; exit(1) if sys.version_info < (3, 10) else exit(0)" || \
 	(echo "Error: Python 3.10 or higher is required."; exit 1)
 	@python3 -m venv $(VENV)
+
+build: install
+	@$(PIP) install build
+	@$(PYTHON) -m build
+	@cp dist/$(WHL) .
 
 run:
 	@$(PYTHON) $(MAIN) config.txt
@@ -66,4 +68,4 @@ test-file:
 	fi
 
 
-.PHONY: all install run debug clean fclean re lint lint-strict test test-file
+.PHONY: all install run build debug clean fclean re lint lint-strict test test-file

@@ -7,7 +7,13 @@
   <br>
 </div>
 
-# A-Maze-ing 
+# A-Maze-ing
+
+![Language](https://img.shields.io/badge/Language-python-blue)
+![Grade](https://img.shields.io/badge/Grade-125%2F100-brightgreen)
+![Tag](https://img.shields.io/badge/Algorithms-grey)
+![Tag](https://img.shields.io/badge/TUI-grey)
+![Tag](https://img.shields.io/badge/Unit_tests-grey)
 
 ## I. Description
 
