@@ -15,7 +15,7 @@ class MazeGenerator:
             width: int,
             height: int,
             perfect: bool,
-            seed: int | None = None,
+            seed: int | str | float | None = None,
             ) -> None:
         """Initialize the generator with dimensions and randomness settings."""
         if (not isinstance(width, int) or

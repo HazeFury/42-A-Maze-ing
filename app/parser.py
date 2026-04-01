@@ -18,7 +18,7 @@ class MazeConfig(BaseModel):
         exit_coord (Tuple[int, int]): Ending coordinates (x, y).
         output_file (str): Path to the output file.
         perfect (bool): Whether the maze is perfect (one unique path).
-        seed (int |str | float | None): Seed for reproducibility.
+        seed (int | str | float | None): Seed for reproducibility.
         imperfection_rate (float | None): Rate of the maze imperfection
         (between 0 and 1)
     """
